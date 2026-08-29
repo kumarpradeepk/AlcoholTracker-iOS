@@ -1,0 +1,24 @@
+# Build output and per-user state
+DerivedData/
+build/
+xcuserdata/
+*.xcuserstate
+*.ipa
+*.dSYM
+*.dSYM.zip
+.swiftpm/
+Packages/
+
+# Signing material — never commit
+*.p12
+*.mobileprovision
+*.certSigningRequest
+
+# Not part of the app: design corpus, product spec and localization
+# working files live in the workspace, outside this repo.
+/Localization/
+/Design/
+
+# OS cruft
+.DS_Store
+Thumbs.db
