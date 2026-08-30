@@ -72,12 +72,12 @@ struct DiaryView: View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(model.selectedDayTitle)
-                    .font(.system(size: scrolled ? 22 : 32, weight: .bold))
+                    .font(theme.fonts.body(scrolled ? 22 : 32, .bold))
                     .kerning(-0.5)
                     .contentTransition(.opacity)
                 Text(model.selectedDaySubtitle)
-                    .font(.system(size: 14))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(14))
+                    .foregroundStyle(theme.muted)
             }
             Spacer()
             HStack(spacing: 8) {
@@ -111,18 +111,18 @@ struct DiaryView: View {
                     .frame(width: 30, height: 30)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(L.s("diary_pro_banner_title"))
-                        .font(.system(size: 14.5, weight: .semibold))
-                        .foregroundStyle(theme.ink)
+                        .font(theme.fonts.body(14.5, .semibold))
+                        .foregroundStyle(theme.text)
                     Text(L.s("diary_pro_banner_sub"))
-                        .font(.system(size: 12.5))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(12.5))
+                        .foregroundStyle(theme.muted)
                 }
                 Spacer()
                 ChevronRight()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(theme.tideSoft))
+            .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(theme.surface2))
         }
         .buttonStyle(PressScale(scale: 0.98))
     }
@@ -132,31 +132,31 @@ struct DiaryView: View {
     private var quickRow: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(L.s("diary_usual"))
-                .font(.system(size: 13))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(13))
+                .foregroundStyle(theme.muted)
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
                     ForEach(model.quickItems) { item in
                         Button { model.quickLog(item) } label: {
                             HStack(spacing: 8) {
-                                Circle().fill(theme.tide).frame(width: 6, height: 6)
+                                Circle().fill(theme.accent).frame(width: 6, height: 6)
                                 Text(item.name)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(theme.ink)
+                                    .font(theme.fonts.body(14, .semibold))
+                                    .foregroundStyle(theme.text)
                                 Text(L.f(
                                     "units_abbrev_value",
                                     item.units,
                                     UnitsConfig.current.noun(.abbreviation)
                                 ))
-                                    .font(.system(size: 12.5))
+                                    .font(theme.fonts.body(12.5))
                                     .monospacedDigit()
-                                    .foregroundStyle(theme.sec)
+                                    .foregroundStyle(theme.muted)
                             }
                             .padding(.horizontal, 16)
                             .frame(height: 44)
                             .background(
                                 Capsule()
-                                    .fill(theme.card)
+                                    .fill(theme.surface)
                                     .shadow(color: .black.opacity(0.05), radius: 6, y: 4)
                             )
                         }
@@ -180,10 +180,10 @@ struct DiaryView: View {
     private var ringColor: Color {
         let goal = Double(settings.dailyGoal)
         let u = model.selectedDayUnits
-        if u / goal >= 1.5 { return theme.danger.opacity(0.85) }
-        if u > goal { return theme.danger }
-        if u / goal >= 0.75 { return theme.amber }
-        return theme.tide
+        if u / goal >= 1.5 { return theme.b3.opacity(0.85) }
+        if u > goal { return theme.b3 }
+        if u / goal >= 0.75 { return theme.b2 }
+        return theme.accent
     }
 
     private var remainLine: (text: String, color: Color) {
@@ -194,24 +194,24 @@ struct DiaryView: View {
         if settings.tone == .numbers {
             return (
                 L.f("diary_remaining_numbers", u, settings.dailyGoal, units.noun(.plural)),
-                theme.sec
+                theme.muted
             )
         }
         if u == 0 {
-            return (L.s("diary_remaining_zero_neutral"), theme.sec)
+            return (L.s("diary_remaining_zero_neutral"), theme.muted)
         }
         if rem > 0 {
             return (
                 L.f("diary_remaining_left_neutral", rem, units.noun(.plural)),
-                theme.sec
+                theme.muted
             )
         }
         if rem == 0 {
-            return (L.s("diary_remaining_at_target_neutral"), theme.sec)
+            return (L.s("diary_remaining_at_target_neutral"), theme.muted)
         }
         return (
             L.f("diary_remaining_over_neutral", abs(rem), settings.dailyGoal, units.noun(.plural)),
-            theme.amber
+            theme.b2
         )
     }
 
@@ -219,15 +219,15 @@ struct DiaryView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(L.s(model.dayOffset == 0 ? "diary_intake_today" : "diary_intake"))
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(theme.fonts.body(15, .semibold))
                 Spacer()
                 Button { model.openSheet(.unitsInfo) } label: {
                     Text(verbatim: "i")
-                        .font(.system(size: 12, weight: .semibold, design: .serif))
+                        .font(theme.fonts.display(12))
                         .italic()
-                        .foregroundStyle(theme.sec)
+                        .foregroundStyle(theme.muted)
                         .frame(width: 24, height: 24)
-                        .background(Circle().fill(theme.card2))
+                        .background(Circle().fill(theme.surface2))
                 }
                 .buttonStyle(PressScale(scale: 0.88))
                 .accessibilityLabel(L.unit("a11y_units_info", UnitsConfig.current.noun(.singular)))
@@ -250,8 +250,8 @@ struct DiaryView: View {
                             settings.dailyGoal,
                             UnitsConfig.current.noun(count: settings.dailyGoal)
                         ))
-                            .font(.system(size: 11.5))
-                            .foregroundStyle(theme.sec)
+                            .font(theme.fonts.body(11.5))
+                            .foregroundStyle(theme.muted)
                     }
                 }
                 .accessibilityElement(children: .combine)
@@ -278,15 +278,15 @@ struct DiaryView: View {
             .padding(.top, 14)
 
             Text(remainLine.text)
-                .font(.system(size: 13.5))
+                .font(theme.fonts.body(13.5))
                 .foregroundStyle(remainLine.color)
                 .padding(.top, 14)
 
             Button(L.s("diary_adjust_guideline")) {
                 withAnimation(Motion.slide) { model.push = .guideline }
             }
-            .font(.system(size: 13))
-            .foregroundStyle(theme.tide)
+            .font(theme.fonts.body(13))
+            .foregroundStyle(theme.accent)
             .padding(.top, 5)
         }
         .padding(18)
@@ -297,14 +297,14 @@ struct DiaryView: View {
         VStack(spacing: 5) {
             HStack {
                 Text(label)
-                    .font(.system(size: 12.5))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(12.5))
+                    .foregroundStyle(theme.muted)
                 Spacer()
                 Text(L.f("diary_mini_value", value, target))
-                    .font(.system(size: 12.5, weight: .semibold))
+                    .font(theme.fonts.body(12.5, .semibold))
                     .monospacedDigit()
             }
-            ThinBar(fraction: value / Double(max(1, target)), color: theme.tide)
+            ThinBar(fraction: value / Double(max(1, target)), color: theme.accent)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(L.f(
@@ -332,33 +332,33 @@ struct DiaryView: View {
     private var bacFreeCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(L.s("bac_monitor")).font(.system(size: 15, weight: .semibold))
+                Text(L.s("bac_monitor")).font(theme.fonts.body(15, .semibold))
                 Spacer()
                 ProBadge { model.openPaywall() }
             }
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 Text(verbatim: "--")
-                    .font(.system(size: 33, weight: .bold))
-                    .foregroundStyle(theme.ter)
+                    .font(theme.fonts.display(33))
+                    .foregroundStyle(theme.faint)
                 HStack(spacing: 6) {
-                    PulsingDot(color: theme.ter)
+                    PulsingDot(color: theme.faint)
                     Text(L.s("bac_status_waiting"))
-                        .font(.system(size: 11, weight: .bold))
+                        .font(theme.fonts.body(11, .bold))
                         .kerning(1)
-                        .foregroundStyle(theme.ter)
+                        .foregroundStyle(theme.faint)
                 }
             }
             .padding(.top, 12)
             Text(L.s("bac_free_body"))
-                .font(.system(size: 13.5))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(13.5))
+                .foregroundStyle(theme.muted)
                 .padding(.top, 6)
             HStack(spacing: 18) {
                 Button(L.s("bac_how_estimated")) { model.openSheet(.bacInfo) }
                 Button(L.s("bac_trends")) { model.openPaywall() }
             }
-            .font(.system(size: 13))
-            .foregroundStyle(theme.tide)
+            .font(theme.fonts.body(13))
+            .foregroundStyle(theme.accent)
             .padding(.top, 12)
         }
         .padding(18)
@@ -368,21 +368,21 @@ struct DiaryView: View {
     private var bacSetupCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(L.s("bac_setup_title"))
-                .font(.system(size: 15, weight: .semibold))
+                .font(theme.fonts.body(15, .semibold))
             Text(L.s("bac_setup_body"))
-                .font(.system(size: 13.5))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(13.5))
+                .foregroundStyle(theme.muted)
                 .lineSpacing(2)
                 .padding(.top, 6)
             Button {
                 withAnimation(Motion.slide) { model.push = .profile }
             } label: {
                 Text(L.s("bac_setup_cta"))
-                    .font(.system(size: 14.5, weight: .semibold))
-                    .foregroundStyle(theme.tide)
+                    .font(theme.fonts.body(14.5, .semibold))
+                    .foregroundStyle(theme.accent)
                     .padding(.horizontal, 20)
                     .frame(height: 40)
-                    .background(Capsule().fill(theme.tideSoft))
+                    .background(Capsule().fill(theme.surface2))
             }
             .buttonStyle(PressScale(scale: 0.95))
             .padding(.top, 14)
@@ -394,9 +394,9 @@ struct DiaryView: View {
 
     private func bacLiveCard(_ bac: BacEstimate) -> some View {
         let statusColors: (bg: Color, fg: Color) = switch bac.status {
-        case .rising: (theme.amberSoft, theme.amber)
-        case .settling: (theme.tideSoft, theme.tide)
-        case .clear: (theme.mossSoft, theme.moss)
+        case .rising: (theme.surface2, theme.b2)
+        case .settling: (theme.surface2, theme.accent)
+        case .clear: (theme.surface2, theme.b1)
         }
         let display = settings.bacUnit == .percent
             ? L.f("bac_value_percent", bac.value)
@@ -404,10 +404,10 @@ struct DiaryView: View {
 
         return VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(L.s("bac_monitor")).font(.system(size: 15, weight: .semibold))
+                Text(L.s("bac_monitor")).font(theme.fonts.body(15, .semibold))
                 Spacer()
                 Text(bac.status.label)
-                    .font(.system(size: 10.5, weight: .bold))
+                    .font(theme.fonts.body(10.5, .bold))
                     .kerning(0.8)
                     .foregroundStyle(statusColors.fg)
                     .padding(.horizontal, 9)
@@ -423,8 +423,8 @@ struct DiaryView: View {
             Text(bac.value > 0.002
                 ? L.f("bac_sober_in", Formatters.hoursMinutes(bac.hoursToZero))
                 : L.s("bac_all_clear"))
-                .font(.system(size: 14))
-                .foregroundStyle(theme.moss)
+                .font(theme.fonts.body(14))
+                .foregroundStyle(theme.b1)
                 .padding(.top, 3)
 
             Button {
@@ -432,26 +432,26 @@ struct DiaryView: View {
             } label: {
                 HStack {
                     Text(L.s("bac_trends"))
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(theme.tide)
+                        .font(theme.fonts.body(14, .semibold))
+                        .foregroundStyle(theme.accent)
                     Spacer()
                     ChevronRight()
                 }
                 .padding(.top, 12)
-                .overlay(alignment: .top) { Rectangle().fill(theme.hair).frame(height: 0.5) }
+                .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 0.5) }
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .padding(.top, 14)
 
             Text(L.s("bac_disclaimer_short"))
-                .font(.system(size: 11.5))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(11.5))
+                .foregroundStyle(theme.faint)
                 .lineSpacing(2)
                 .padding(.top, 10)
             Button(L.s("bac_how_estimated")) { model.openSheet(.bacInfo) }
-                .font(.system(size: 13))
-                .foregroundStyle(theme.tide)
+                .font(theme.fonts.body(13))
+                .foregroundStyle(theme.accent)
                 .padding(.top, 6)
         }
         .padding(18)
@@ -462,24 +462,24 @@ struct DiaryView: View {
 
     private var dryCard: some View {
         VStack(spacing: 0) {
-            AnimatedGlass(width: 72, height: 96, liquid: theme.moss, outline: theme.moss.opacity(0.55), showCheck: true)
+            AnimatedGlass(width: 72, height: 96, liquid: theme.b1, outline: theme.b1.opacity(0.55), showCheck: true)
             Text(L.s(model.dayOffset == 0 ? "diary_dry_marked" : "diary_dry_remembered"))
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(theme.moss)
+                .font(theme.fonts.display(17))
+                .foregroundStyle(theme.b1)
                 .padding(.top, 12)
             Text(L.s("diary_dry_body"))
-                .font(.system(size: 13.5))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(13.5))
+                .foregroundStyle(theme.muted)
                 .padding(.top, 5)
             Button(L.s("diary_dry_unmark")) { model.unmarkDry(key: model.selectedKey) }
-                .font(.system(size: 13))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(13))
+                .foregroundStyle(theme.faint)
                 .underline()
                 .padding(.top, 12)
         }
         .frame(maxWidth: .infinity)
         .padding(22)
-        .background(RoundedRectangle(cornerRadius: 22, style: .continuous).fill(theme.mossSoft))
+        .background(RoundedRectangle(cornerRadius: 22, style: .continuous).fill(theme.surface2))
     }
 
     // MARK: Entries
@@ -493,11 +493,11 @@ struct DiaryView: View {
                         GlassIcon(abv: entry.abv)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(entry.name)
-                                .font(.system(size: 15.5, weight: .semibold))
-                                .foregroundStyle(theme.ink)
+                                .font(theme.fonts.body(15.5, .semibold))
+                                .foregroundStyle(theme.text)
                             Text(L.f("diary_entry_meta", Int(entry.ml), Formatters.trim(entry.abv)))
-                                .font(.system(size: 13))
-                                .foregroundStyle(theme.sec)
+                                .font(theme.fonts.body(13))
+                                .foregroundStyle(theme.muted)
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 2) {
@@ -506,19 +506,19 @@ struct DiaryView: View {
                                 entry.units,
                                 UnitsConfig.current.noun(.abbreviation)
                             ))
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(theme.fonts.body(14, .semibold))
                                 .monospacedDigit()
-                                .foregroundStyle(theme.tide)
+                                .foregroundStyle(theme.accent)
                             Text(Formatters.time(entry.loggedAt))
-                                .font(.system(size: 12))
-                                .foregroundStyle(theme.ter)
+                                .font(theme.fonts.body(12))
+                                .foregroundStyle(theme.faint)
                         }
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .fill(theme.card)
+                            .fill(theme.surface)
                             .shadow(color: .black.opacity(0.03), radius: 1, y: 1)
                             .shadow(color: .black.opacity(0.04), radius: 8, y: 5)
                     )
@@ -536,13 +536,13 @@ struct DiaryView: View {
         VStack(spacing: 0) {
             AnimatedGlass()
             Text(L.s(model.dayOffset == 0 ? "diary_empty_title_today" : "diary_empty_title_other"))
-                .font(.system(size: 19, weight: .semibold))
+                .font(theme.fonts.display(19))
                 .padding(.top, 24)
             Text(L.s(model.dayOffset == 0
                 ? "diary_empty_body_today"
                 : "diary_empty_body_other"))
-                .font(.system(size: 14.5))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(14.5))
+                .foregroundStyle(theme.muted)
                 .multilineTextAlignment(.center)
                 .lineSpacing(3)
                 .frame(maxWidth: 280)
@@ -552,12 +552,12 @@ struct DiaryView: View {
                 PrimaryButton(title: L.s("action_log_drink"), height: 52) { model.openSheet(.log) }
                 SoftButton(
                     title: L.s("action_mark_dry_day"),
-                    background: theme.mossSoft,
-                    foreground: theme.moss
+                    background: theme.surface2,
+                    foreground: theme.b1
                 ) { model.markDry(key: model.selectedKey) }
                 Button(L.s("diary_add_previous_dry")) { model.openSheet(.calendar(dryMode: true)) }
-                    .font(.system(size: 14))
-                    .foregroundStyle(theme.tide)
+                    .font(theme.fonts.body(14))
+                    .foregroundStyle(theme.accent)
                     .padding(.top, 4)
             }
             .padding(.horizontal, 26)

@@ -79,6 +79,7 @@ enum AppDialog: Identifiable, Equatable {
 
 enum PushScreen: String, Identifiable {
     case profile, units, notifications, bacMonitor, watch, backup, about, icon, bacTrends, guideline
+    case theme
 
     var id: String { rawValue }
 
@@ -92,6 +93,7 @@ enum PushScreen: String, Identifiable {
         case .backup: L.s("push_title_backup")
         case .about: L.s("push_title_about")
         case .icon: L.s("set_app_icon")
+        case .theme: L.s("push_title_theme")
         case .bacTrends: L.s("push_title_trends")
         case .guideline: L.s("push_title_guideline")
         }

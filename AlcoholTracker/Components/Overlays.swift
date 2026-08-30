@@ -12,20 +12,20 @@ struct ToastHost: View {
             if let toast = model.toast {
                 HStack(spacing: 14) {
                     Text(toast.message)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(theme.fonts.body(14, .medium))
                         .foregroundStyle(theme.bg)
                         .multilineTextAlignment(.center)
                     if toast.showsUndo {
                         Button(L.s("action_undo")) { model.undoLastLog() }
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(theme.amber)
+                            .font(theme.fonts.body(14, .bold))
+                            .foregroundStyle(theme.b2)
                     }
                 }
                 .padding(.horizontal, 18)
                 .padding(.vertical, 11)
                 .background(
                     Capsule()
-                        .fill(theme.ink)
+                        .fill(theme.text)
                         .shadow(color: .black.opacity(0.25), radius: 15, y: 10)
                 )
                 .frame(maxWidth: 340)
@@ -62,7 +62,7 @@ struct DialogHost: View {
                     .padding(22)
                     .background(
                         RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .fill(theme.card)
+                            .fill(theme.surface)
                             .shadow(color: .black.opacity(0.3), radius: 30, y: 20)
                     )
                     .transition(.scale(scale: 0.6).combined(with: .opacity))
@@ -77,15 +77,15 @@ struct DialogHost: View {
         case .deleteEntry(let id):
             VStack(spacing: 0) {
                 Text(L.s("dialog_delete_title"))
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(theme.fonts.display(17))
                 Text(L.s("dialog_delete_body"))
-                    .font(.system(size: 13.5))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13.5))
+                    .foregroundStyle(theme.muted)
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)
                 HStack(spacing: 10) {
-                    dialogButton(L.s("dialog_delete_keep"), fill: theme.card2, text: theme.ink) { model.dialog = nil }
-                    dialogButton(L.s("dialog_delete_remove"), fill: theme.danger, text: .white) { model.deleteEntry(id: id) }
+                    dialogButton(L.s("dialog_delete_keep"), fill: theme.surface2, text: theme.text) { model.dialog = nil }
+                    dialogButton(L.s("dialog_delete_remove"), fill: theme.b3, text: .white) { model.deleteEntry(id: id) }
                 }
                 .padding(.top, 18)
             }
@@ -93,15 +93,15 @@ struct DialogHost: View {
         case .clearAll:
             VStack(spacing: 0) {
                 Text(L.s("dialog_clear_title"))
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(theme.fonts.display(17))
                 Text(L.s("dialog_clear_body"))
-                    .font(.system(size: 13.5))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13.5))
+                    .foregroundStyle(theme.muted)
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)
                 HStack(spacing: 10) {
-                    dialogButton(L.s("action_cancel"), fill: theme.card2, text: theme.ink) { model.dialog = nil }
-                    dialogButton(L.s("dialog_clear_delete"), fill: theme.danger, text: .white) { model.clearAllData() }
+                    dialogButton(L.s("action_cancel"), fill: theme.surface2, text: theme.text) { model.dialog = nil }
+                    dialogButton(L.s("dialog_clear_delete"), fill: theme.b3, text: .white) { model.clearAllData() }
                 }
                 .padding(.top, 18)
             }
@@ -109,16 +109,16 @@ struct DialogHost: View {
         case .healthPermission:
             VStack(spacing: 0) {
                 Text(L.f("dialog_health_title", L.s("app_name"), HealthService.name))
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(theme.fonts.body(16, .semibold))
                     .multilineTextAlignment(.center)
                 Text(L.s("sheet_health_data_sub"))
-                    .font(.system(size: 13))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13))
+                    .foregroundStyle(theme.muted)
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)
                 HStack(spacing: 10) {
-                    dialogButton(L.s("dialog_health_deny"), fill: theme.card2, text: theme.ink) { model.dialog = nil }
-                    dialogButton(L.s("dialog_health_allow"), fill: theme.tide, text: .white) {
+                    dialogButton(L.s("dialog_health_deny"), fill: theme.surface2, text: theme.text) { model.dialog = nil }
+                    dialogButton(L.s("dialog_health_allow"), fill: theme.accent, text: theme.onAccent) {
                         model.dialog = nil
                         Task {
                             let ok = await HealthSync.shared.requestAuthorization()
@@ -138,7 +138,7 @@ struct DialogHost: View {
     private func dialogButton(_ title: String, fill: Color, text: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(theme.fonts.body(15, .semibold))
                 .foregroundStyle(text)
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
@@ -162,7 +162,7 @@ struct PushHost<Content: View>: View {
                 CircleIconButton(systemName: "chevron.left", action: onBack)
                     .accessibilityLabel(L.s("a11y_back"))
                 Text(title)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(theme.fonts.display(20))
                 Spacer()
             }
             .padding(.horizontal, 18)

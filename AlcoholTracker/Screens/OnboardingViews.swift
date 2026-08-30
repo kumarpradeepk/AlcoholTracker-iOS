@@ -18,19 +18,19 @@ struct WelcomeView: View {
                     .padding(.bottom, 32)
 
                 Text(L.s("ob_welcome_title"))
-                    .font(.system(size: 30, weight: .bold))
+                    .font(theme.fonts.display(30))
                     .kerning(-0.4)
                     .multilineTextAlignment(.center)
                     .lineSpacing(2)
 
                 Text(L.s("ob_welcome_sub"))
-                    .font(.system(size: 17))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(17))
+                    .foregroundStyle(theme.muted)
                     .padding(.top, 10)
 
                 Text(L.s("ob_welcome_body"))
-                    .font(.system(size: 15))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(15))
+                    .foregroundStyle(theme.muted)
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
                     .frame(maxWidth: 290)
@@ -44,9 +44,9 @@ struct WelcomeView: View {
             Spacer()
 
             HStack(spacing: 6) {
-                Capsule().fill(theme.tide).frame(width: 20, height: 6)
-                Circle().fill(theme.hair).frame(width: 6, height: 6)
-                Circle().fill(theme.hair).frame(width: 6, height: 6)
+                Capsule().fill(theme.accent).frame(width: 20, height: 6)
+                Circle().fill(theme.line).frame(width: 6, height: 6)
+                Circle().fill(theme.line).frame(width: 6, height: 6)
             }
             .padding(.bottom, 18)
 
@@ -63,8 +63,8 @@ struct WelcomeView: View {
         HStack(spacing: 14) {
             // Miniature watch face with two quick-log pills.
             VStack(spacing: 5) {
-                watchPill("Beer", tint: Color(hex: 0x9FC6DC), bg: Color(hex: 0x7EB0CC).opacity(0.25))
-                watchPill("Wine", tint: Color(hex: 0xA9CBB0), bg: Color(hex: 0x8CB694).opacity(0.22))
+                watchPill("Beer", tint: DrinkTints.beer, bg: DrinkTints.beer.opacity(0.25))
+                watchPill("Wine", tint: DrinkTints.wine, bg: DrinkTints.wine.opacity(0.28))
             }
             .frame(width: 64, height: 78)
             .background(
@@ -78,27 +78,27 @@ struct WelcomeView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(L.s("ob_welcome_quick_caption"))
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(theme.fonts.body(13, .semibold))
                 Text(L.s("ob_welcome_bac_example"))
-                    .font(.system(size: 12))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(12))
+                    .foregroundStyle(theme.muted)
                 Text(L.s("ob_welcome_sober_example"))
-                    .font(.system(size: 12))
-                    .foregroundStyle(theme.moss)
+                    .font(theme.fonts.body(12))
+                    .foregroundStyle(theme.b1)
             }
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(theme.card)
+                .fill(theme.surface)
                 .shadow(color: .black.opacity(0.06), radius: 12, y: 6)
         )
     }
 
     private func watchPill(_ label: String, tint: Color, bg: Color) -> some View {
         Text(label)
-            .font(.system(size: 8, weight: .semibold))
+            .font(theme.fonts.body(8, .semibold))
             .foregroundStyle(tint)
             .frame(width: 44, height: 20)
             .background(Capsule().fill(bg))
@@ -136,12 +136,12 @@ struct GoalsView: View {
             }, onSkip: skip)
 
             Text(L.s("ob_goals_title"))
-                .font(.system(size: 27, weight: .bold))
+                .font(theme.fonts.display(27))
                 .kerning(-0.4)
                 .padding(.top, 6)
             Text(L.s("ob_goals_sub"))
-                .font(.system(size: 15))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(15))
+                .foregroundStyle(theme.muted)
                 .lineSpacing(2)
                 .padding(.top, 6)
 
@@ -214,12 +214,12 @@ struct BaselineView: View {
             }, onSkip: finish)
 
             Text(L.s("ob_base_title"))
-                .font(.system(size: 27, weight: .bold))
+                .font(theme.fonts.display(27))
                 .kerning(-0.4)
                 .padding(.top, 6)
             Text(L.s("ob_base_sub"))
-                .font(.system(size: 15))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(15))
+                .foregroundStyle(theme.muted)
                 .lineSpacing(2)
                 .padding(.top, 6)
 
@@ -270,13 +270,13 @@ private struct OnboardingHeader: View {
                 .accessibilityLabel(L.s("a11y_back"))
             HStack {
                 Text(L.f("ob_step_indicator", step))
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(theme.fonts.body(12, .semibold))
                     .kerning(1)
-                    .foregroundStyle(theme.ter)
+                    .foregroundStyle(theme.faint)
                 Spacer()
                 Button(L.s("ob_skip"), action: onSkip)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(theme.ter)
+                    .font(theme.fonts.body(14, .medium))
+                    .foregroundStyle(theme.faint)
             }
         }
     }
@@ -296,37 +296,37 @@ private struct SelectableRow: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .strokeBorder(selected ? theme.tide : theme.hair, lineWidth: 1.5)
-                        .background(Circle().fill(selected ? theme.tide : .clear))
+                        .strokeBorder(selected ? theme.accent : theme.line, lineWidth: 1.5)
+                        .background(Circle().fill(selected ? theme.accent : .clear))
                         .frame(width: 24, height: 24)
                     if selected {
                         switch checkStyle {
                         case .check:
                             Image(systemName: "checkmark")
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(theme.onAccent)
                                 .transition(.scale.combined(with: .opacity))
                         case .radio:
                             Circle()
-                                .fill(.white)
+                                .fill(theme.onAccent)
                                 .frame(width: 10, height: 10)
                                 .transition(.scale.combined(with: .opacity))
                         }
                     }
                 }
                 Text(title)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(theme.ink)
+                    .font(theme.fonts.body(16, .medium))
+                    .foregroundStyle(theme.text)
                 Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 15)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(selected ? theme.tideSoft : theme.card)
+                    .fill(selected ? theme.surface2 : theme.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .strokeBorder(selected ? theme.tide : .clear, lineWidth: 1.5)
+                            .strokeBorder(selected ? theme.accent : .clear, lineWidth: 1.5)
                     )
             )
         }

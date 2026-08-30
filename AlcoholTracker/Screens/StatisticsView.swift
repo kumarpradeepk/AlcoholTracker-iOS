@@ -19,16 +19,16 @@ struct StatisticsView: View {
 
                 if model.statsPeriod == .custom {
                     Button(L.s("stats_edit_range")) { model.openSheet(.customRange) }
-                        .font(.system(size: 13))
-                        .foregroundStyle(theme.tide)
+                        .font(theme.fonts.body(13))
+                        .foregroundStyle(theme.accent)
                         .frame(maxWidth: .infinity)
                         .padding(.top, 8)
                 }
 
                 if let verdict = StatsEngine.verdict(range: range, tone: settings.tone) {
                     Text(verdict.text)
-                        .font(.system(size: 13.5, weight: .semibold))
-                        .foregroundStyle(verdict.positive ? theme.moss : theme.sec)
+                        .font(theme.fonts.body(13.5, .semibold))
+                        .foregroundStyle(verdict.positive ? theme.b1 : theme.muted)
                         .frame(maxWidth: .infinity)
                         .padding(.top, 10)
                 }
@@ -58,7 +58,7 @@ struct StatisticsView: View {
     private var header: some View {
         HStack(alignment: .bottom) {
             Text(MainTab.stats.title)
-                .font(.system(size: 32, weight: .bold))
+                .font(theme.fonts.display(32))
                 .kerning(-0.5)
             Spacer()
             Button { model.openSheet(.export) } label: {
@@ -68,12 +68,12 @@ struct StatisticsView: View {
                     Text(L.s("action_export"))
                         .font(.system(size: 13.5, weight: .semibold))
                 }
-                .foregroundStyle(theme.tide)
+                .foregroundStyle(theme.accent)
                 .padding(.horizontal, 14)
                 .frame(height: 36)
                 .background(
                     Capsule()
-                        .fill(theme.card)
+                        .fill(theme.surface)
                         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
                 )
             }
@@ -90,7 +90,7 @@ struct StatisticsView: View {
             let index = CGFloat(StatsPeriod.allCases.firstIndex(of: model.statsPeriod) ?? 0)
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 11, style: .continuous)
-                    .fill(theme.card)
+                    .fill(theme.surface)
                     .shadow(color: .black.opacity(0.1), radius: 2.5, y: 1)
                     .frame(width: segmentWidth, height: geo.size.height - 6)
                     .offset(x: 3 + index * segmentWidth)
@@ -101,14 +101,14 @@ struct StatisticsView: View {
                         Button { select(period) } label: {
                             HStack(spacing: 3) {
                                 Text(period.label)
-                                    .font(.system(size: 13, weight: .semibold))
+                                    .font(theme.fonts.body(13, .semibold))
                                 if period.requiresPro, !model.pro {
                                     Image(systemName: "lock.fill")
                                         .font(.system(size: 8))
-                                        .foregroundStyle(theme.ter)
+                                        .foregroundStyle(theme.faint)
                                 }
                             }
-                            .foregroundStyle(model.statsPeriod == period ? theme.ink : theme.sec)
+                            .foregroundStyle(model.statsPeriod == period ? theme.text : theme.muted)
                             .frame(maxWidth: .infinity)
                             .frame(height: geo.size.height)
                             .contentShape(Rectangle())
@@ -119,7 +119,7 @@ struct StatisticsView: View {
             }
         }
         .frame(height: 34)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.card2).padding(-3))
+        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.surface2).padding(-3))
         .padding(3)
     }
 
@@ -149,7 +149,7 @@ struct StatisticsView: View {
             .accessibilityLabel(L.s("a11y_prev_period"))
             Spacer()
             Text(range.label)
-                .font(.system(size: 14.5, weight: .semibold))
+                .font(theme.fonts.body(14.5, .semibold))
             Spacer()
             CircleIconButton(systemName: "chevron.right", size: 34, dimmed: model.statsPage == 0) {
                 guard model.statsPage > 0 else { return }
@@ -209,20 +209,20 @@ struct StatisticsView: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(12, .semibold))
+                .foregroundStyle(theme.muted)
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 CountingText(value: value, format: format, font: .system(size: 20, weight: .bold))
                 if let unit {
                     Text(unit)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(12, .medium))
+                        .foregroundStyle(theme.muted)
                 }
             }
             if !footnote.isEmpty {
                 Text(footnote)
-                    .font(.system(size: 11))
-                    .foregroundStyle(theme.ter)
+                    .font(theme.fonts.body(11))
+                    .foregroundStyle(theme.faint)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -238,7 +238,7 @@ struct StatisticsView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(L.unit("stats_units_chart_title", UnitsConfig.current.noun(.plural)))
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(theme.fonts.body(15, .semibold))
                 Spacer()
                 averageToggle(label: L.s("stats_daily_average"), isOn: $model.showDailyAverage)
             }
@@ -258,16 +258,16 @@ struct StatisticsView: View {
                     Spacer()
                     Text(L.f("stats_units_per_day", range.totalUnits / Double(range.days)))
                 }
-                .font(.system(size: 12.5))
+                .font(theme.fonts.body(12.5))
                 .monospacedDigit()
-                .foregroundStyle(theme.sec)
+                .foregroundStyle(theme.muted)
                 .padding(.top, 10)
             } else {
                 VStack(spacing: 12) {
                     RisingBubbles()
                     Text(L.s("stats_units_empty"))
-                        .font(.system(size: 13.5))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(13.5))
+                        .foregroundStyle(theme.muted)
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 110)
@@ -280,7 +280,7 @@ struct StatisticsView: View {
     private var spendChartCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(L.s("stats_spend_chart_title")).font(.system(size: 15, weight: .semibold))
+                Text(L.s("stats_spend_chart_title")).font(theme.fonts.body(15, .semibold))
                 Spacer()
                 averageToggle(label: L.s("stats_daily_average"), isOn: $model.showSpendAverage)
             }
@@ -307,14 +307,14 @@ struct StatisticsView: View {
                         CurrencyConfig.current.symbol
                     ))
                 }
-                .font(.system(size: 12.5))
+                .font(theme.fonts.body(12.5))
                 .monospacedDigit()
-                .foregroundStyle(theme.sec)
+                .foregroundStyle(theme.muted)
                 .padding(.top, 10)
             } else {
                 Text(L.s("stats_spend_empty"))
-                    .font(.system(size: 13.5))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13.5))
+                    .foregroundStyle(theme.muted)
                     .frame(maxWidth: .infinity)
                     .frame(height: 90)
             }
@@ -326,8 +326,8 @@ struct StatisticsView: View {
     private func averageToggle(label: String, isOn: Binding<Bool>) -> some View {
         HStack(spacing: 7) {
             Text(label)
-                .font(.system(size: 12))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(12))
+                .foregroundStyle(theme.muted)
             MiniToggle(isOn: isOn)
         }
     }
@@ -337,27 +337,27 @@ struct StatisticsView: View {
     private var moneySavedCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 10) {
-                Text(L.s("stats_money_saved_title")).font(.system(size: 15, weight: .semibold))
+                Text(L.s("stats_money_saved_title")).font(theme.fonts.body(15, .semibold))
                 Spacer()
                 HStack(spacing: 5) {
                     Text(L.f("stats_baseline_label", CurrencyConfig.current.symbol))
-                        .font(.system(size: 12.5))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(12.5))
+                        .foregroundStyle(theme.muted)
                     TextField(L.s("log_cost_placeholder"), text: $settings.spendBaseline)
                         .keyboardType(.decimalPad)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(theme.fonts.body(14, .semibold))
                         .monospacedDigit()
                         .multilineTextAlignment(.center)
                         .frame(width: 52, height: 32)
-                        .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(theme.card2))
+                        .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(theme.surface2))
                 }
             }
             Text(StatsEngine.savedLine(
                 baseline: Double(settings.spendBaseline.replacingOccurrences(of: ",", with: ".")) ?? 0,
                 range: range
             ))
-            .font(.system(size: 13.5))
-            .foregroundStyle(theme.sec)
+            .font(theme.fonts.body(13.5))
+            .foregroundStyle(theme.muted)
             .lineSpacing(3)
             .padding(.top, 10)
         }
@@ -374,14 +374,14 @@ struct StatisticsView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
                         Text(L.s("stats_breakdown_title"))
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(theme.ink)
+                            .font(theme.fonts.body(15, .semibold))
+                            .foregroundStyle(theme.text)
                         Spacer()
                         ProBadge()
                     }
                     Text(L.s("stats_breakdown_locked"))
-                        .font(.system(size: 13.5))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(13.5))
+                        .foregroundStyle(theme.muted)
                         .lineSpacing(2)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -391,29 +391,29 @@ struct StatisticsView: View {
             .card()
         } else if range.breakdown.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
-                Text(L.s("stats_breakdown_title")).font(.system(size: 15, weight: .semibold))
+                Text(L.s("stats_breakdown_title")).font(theme.fonts.body(15, .semibold))
                 Text(L.s("stats_breakdown_empty"))
-                    .font(.system(size: 13.5))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13.5))
+                    .foregroundStyle(theme.muted)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)
             .card()
         } else {
             VStack(alignment: .leading, spacing: 0) {
-                Text(L.s("stats_breakdown_title")).font(.system(size: 15, weight: .semibold))
+                Text(L.s("stats_breakdown_title")).font(theme.fonts.body(15, .semibold))
                 ForEach(Array(range.breakdown.enumerated()), id: \.element.id) { i, row in
                     VStack(spacing: 5) {
                         HStack {
                             Text(L.f("stats_breakdown_row", row.name, row.pours))
-                                .font(.system(size: 13.5))
+                                .font(theme.fonts.body(13.5))
                             Spacer()
                             Text(L.f("stats_breakdown_pct", row.percent))
-                                .font(.system(size: 13.5, weight: .semibold))
+                                .font(theme.fonts.body(13.5, .semibold))
                                 .monospacedDigit()
-                                .foregroundStyle(theme.tide)
+                                .foregroundStyle(theme.accent)
                         }
-                        ThinBar(fraction: Double(row.percent) / 100, color: theme.tide)
+                        ThinBar(fraction: Double(row.percent) / 100, color: theme.accent)
                     }
                     .padding(.top, 12)
                     .riseIn(delay: Double(i) * 0.04)
@@ -425,8 +425,8 @@ struct StatisticsView: View {
                         top.percent,
                         UnitsConfig.current.noun(.plural)
                     ))
-                        .font(.system(size: 13))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(13))
+                        .foregroundStyle(theme.muted)
                         .padding(.top, 12)
                 }
             }
@@ -442,7 +442,7 @@ struct StatisticsView: View {
             ZStack {
                 ProgressRing(
                     progress: Double(range.dryPercent) / 100,
-                    color: theme.moss,
+                    color: theme.b1,
                     lineWidth: 8,
                     size: 84
                 )
@@ -453,10 +453,10 @@ struct StatisticsView: View {
                 )
             }
             VStack(alignment: .leading, spacing: 5) {
-                Text(dryCopy.title).font(.system(size: 15, weight: .semibold))
+                Text(dryCopy.title).font(theme.fonts.body(15, .semibold))
                 Text(dryCopy.body)
-                    .font(.system(size: 13))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13))
+                    .foregroundStyle(theme.muted)
                     .lineSpacing(3)
             }
             Spacer(minLength: 0)
@@ -507,7 +507,7 @@ struct SpendBarChart: View {
                         topLeadingRadius: 3, bottomLeadingRadius: 2,
                         bottomTrailingRadius: 2, topTrailingRadius: 3
                     )
-                    .fill(theme.amber.opacity(0.7))
+                    .fill(theme.b2.opacity(0.7))
                     .frame(height: grown ? 110 * fraction : 2)
                     .frame(maxWidth: .infinity)
                     .animation(Motion.reduced(reduceMotion, Motion.bars.delay(Double(b.id) * 0.024)), value: grown)
@@ -519,7 +519,7 @@ struct SpendBarChart: View {
                 Rectangle()
                     .fill(.clear)
                     .frame(height: 1.5)
-                    .overlay(DashedLine().stroke(theme.ter, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
+                    .overlay(DashedLine().stroke(theme.faint, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])))
                     .offset(y: -110 * min(0.96, averageFraction))
             }
         }
@@ -549,7 +549,7 @@ struct MiniToggle: View {
         } label: {
             ZStack(alignment: isOn ? .trailing : .leading) {
                 Capsule()
-                    .fill(isOn ? theme.tide : theme.card2)
+                    .fill(isOn ? theme.accent : theme.surface2)
                     .frame(width: 40, height: 24)
                 Circle()
                     .fill(.white)
@@ -579,7 +579,7 @@ struct RisingBubbles: View {
                     let a = p < 0.2 ? p / 0.2 : (1 - p)
                     context.fill(
                         Path(ellipseIn: CGRect(x: x - radius, y: y - radius, width: radius * 2, height: radius * 2)),
-                        with: .color(theme.tide.opacity(alpha * a))
+                        with: .color(theme.accent.opacity(alpha * a))
                     )
                 }
                 bubble(x: 13, phase: 0, duration: 5, radius: 3, alpha: 0.55)
@@ -606,7 +606,7 @@ struct CustomRangeSheet: View {
             SheetGrabber().frame(maxWidth: .infinity)
 
             Text(L.s("sheet_range_title"))
-                .font(.system(size: 20, weight: .bold))
+                .font(theme.fonts.display(20))
                 .padding(.top, 8)
 
             HStack(spacing: 10) {
@@ -637,8 +637,8 @@ struct CustomRangeSheet: View {
             .padding(.top, 16)
 
             Button(L.s("action_cancel")) { model.closeSheet() }
-                .font(.system(size: 15.5, weight: .semibold))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(15.5, .semibold))
+                .foregroundStyle(theme.muted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
                 .padding(.top, 8)
@@ -658,8 +658,8 @@ struct CustomRangeSheet: View {
     private func dateCard(label: String, selection: Binding<Date>) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(12, .semibold))
+                .foregroundStyle(theme.muted)
             DatePicker("", selection: selection, in: ...Date(), displayedComponents: .date)
                 .labelsHidden()
                 .datePickerStyle(.compact)
@@ -673,11 +673,11 @@ struct CustomRangeSheet: View {
     private func quickChip(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 13.5, weight: .semibold))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(13.5, .semibold))
+                .foregroundStyle(theme.muted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 36)
-                .background(Capsule().fill(theme.card2))
+                .background(Capsule().fill(theme.surface2))
         }
         .buttonStyle(PressScale(scale: 0.94))
     }
@@ -709,22 +709,22 @@ struct ExportSheet: View {
             SheetGrabber().frame(maxWidth: .infinity)
 
             Text(L.s("sheet_export_title"))
-                .font(.system(size: 20, weight: .bold))
+                .font(theme.fonts.display(20))
                 .padding(.top, 8)
 
             HStack(spacing: 14) {
                 Text(L.s("sheet_export_format"))
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(theme.tide)
+                    .font(theme.fonts.body(10, .bold))
+                    .foregroundStyle(theme.accent)
                     .frame(width: 42, height: 52)
-                    .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(theme.tideSoft))
+                    .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(theme.surface2))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(fileName)
-                        .font(.system(size: 14.5, weight: .semibold))
+                        .font(theme.fonts.body(14.5, .semibold))
                         .lineLimit(1)
                     Text(L.s("sheet_export_desc"))
-                        .font(.system(size: 12.5))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(12.5))
+                        .foregroundStyle(theme.muted)
                 }
             }
             .padding(16)
@@ -736,8 +736,8 @@ struct ExportSheet: View {
                 .padding(.top, 16)
 
             Button(L.s("action_cancel")) { model.closeSheet() }
-                .font(.system(size: 15.5, weight: .semibold))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(15.5, .semibold))
+                .foregroundStyle(theme.muted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
                 .padding(.top, 8)

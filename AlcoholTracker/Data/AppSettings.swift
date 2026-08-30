@@ -110,6 +110,9 @@ final class AppSettings: ObservableObject {
     @Published var discreetNotifications: Bool { didSet { d.set(discreetNotifications, forKey: "discreetNotifications") } }
     @Published var cutoff: DayCutoff { didSet { d.set(cutoff.rawValue, forKey: "cutoff") } }
     @Published var appearance: AppearanceOverride { didSet { d.set(appearance.rawValue, forKey: "appearance") } }
+    /// Which of the three designed themes is active. Independent of
+    /// `appearance`: every theme ships a light and a dark palette.
+    @Published var theme: AppTheme { didSet { d.set(theme.rawValue, forKey: "theme") } }
     @Published var lastBackupAt: Date? { didSet { d.set(lastBackupAt, forKey: "lastBackupAt") } }
     @Published var notificationPermissionAsked: Bool { didSet { d.set(notificationPermissionAsked, forKey: "notifPermAsked") } }
 
@@ -140,6 +143,7 @@ final class AppSettings: ObservableObject {
         discreetNotifications = d.object(forKey: "discreetNotifications") as? Bool ?? true
         cutoff = DayCutoff(rawValue: d.string(forKey: "cutoff") ?? "") ?? .fourAM
         appearance = AppearanceOverride(rawValue: d.string(forKey: "appearance") ?? "") ?? .system
+        theme = AppTheme.from(d.string(forKey: "theme"))
         lastBackupAt = d.object(forKey: "lastBackupAt") as? Date
         notificationPermissionAsked = d.bool(forKey: "notifPermAsked")
 

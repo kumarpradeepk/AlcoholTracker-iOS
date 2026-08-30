@@ -38766,6 +38766,17 @@
         }
       }
     },
+    "push_title_theme": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theme"
+          }
+        }
+      }
+    },
     "push_title_trends": {
       "extractionState": "manual",
       "localizations": {
@@ -47781,6 +47792,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hiện calo"
+          }
+        }
+      }
+    },
+    "set_theme": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theme"
           }
         }
       }
@@ -67469,6 +67491,105 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thống kê"
+          }
+        }
+      }
+    },
+    "theme_caption": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "THEME"
+          }
+        }
+      }
+    },
+    "theme_coaster_desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kraft paper, ink and honey"
+          }
+        }
+      }
+    },
+    "theme_intro": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three complete looks. Each is designed in light and dark independently, so the two choices below are separate."
+          }
+        }
+      }
+    },
+    "theme_kiln_desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warm stone and struck brass"
+          }
+        }
+      }
+    },
+    "theme_nocturne_desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graphite, ivory for banked days"
+          }
+        }
+      }
+    },
+    "theme_scheme_caption": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIGHT OR DARK"
+          }
+        }
+      }
+    },
+    "theme_scheme_dark": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dark"
+          }
+        }
+      }
+    },
+    "theme_scheme_light": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        }
+      }
+    },
+    "theme_scheme_system": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
           }
         }
       }

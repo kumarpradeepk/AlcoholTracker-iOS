@@ -11,12 +11,15 @@ struct RootView: View {
     @Environment(\.colorScheme) private var systemScheme
     @Environment(\.scenePhase) private var scenePhase
 
+    /// Two independent axes: which theme, and which scheme it is shown in.
     private var theme: Theme {
+        let dark: Bool
         switch settings.appearance {
-        case .dark: .dark
-        case .light: .light
-        case .system: systemScheme == .dark ? .dark : .light
+        case .dark: dark = true
+        case .light: dark = false
+        case .system: dark = systemScheme == .dark
         }
+        return Theme.resolve(settings.theme, dark: dark)
     }
 
     var body: some View {
@@ -53,23 +56,23 @@ struct RootView: View {
             }
         }
         .environment(\.theme, theme)
-        .tint(theme.tide)
-        .foregroundStyle(theme.ink)
+        .tint(theme.accent)
+        .foregroundStyle(theme.text)
         .preferredColorScheme(settings.colorScheme)
         .animation(Motion.fade, value: model.phase)
         .fullScreenCover(isPresented: $model.paywallShown) {
             PaywallView(model: model, entitlements: entitlements)
                 .overlay(ToastHost(model: model)) // root host is hidden behind the cover
                 .environment(\.theme, theme)
-                .tint(theme.tide)
-                .foregroundStyle(theme.ink)
+                .tint(theme.accent)
+                .foregroundStyle(theme.text)
         }
         .sheet(item: $model.sheet) { sheet in
             sheetContent(sheet)
                 .overlay(ToastHost(model: model)) // root host is hidden behind the sheet
                 .environment(\.theme, theme)
-                .tint(theme.tide)
-                .foregroundStyle(theme.ink)
+                .tint(theme.accent)
+                .foregroundStyle(theme.text)
         }
         .task {
             // Boot splash: hold ~1s, then fade (matches the canvas timing).
@@ -180,9 +183,9 @@ struct BootOverlay: View {
         VStack(spacing: 18) {
             DropletMark(size: 46)
             Text(L.s("app_name"))
-                .font(.system(size: 15, weight: .semibold))
+                .font(theme.fonts.body(15, .semibold))
                 .kerning(0.4)
-                .foregroundStyle(theme.sec)
+                .foregroundStyle(theme.muted)
                 .opacity(labelShown ? 1 : 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -203,16 +206,16 @@ struct LockOverlay: View {
         VStack(spacing: 20) {
             DropletMark(size: 46)
             Text(L.s("lock_title"))
-                .font(.system(size: 17, weight: .semibold))
+                .font(theme.fonts.display(17))
             Button {
                 Task { await appLock.unlock() }
             } label: {
                 Text(L.s("lock_unlock_cta"))
-                    .font(.system(size: 15.5, weight: .semibold))
-                    .foregroundStyle(theme.tide)
+                    .font(theme.fonts.body(15.5, .semibold))
+                    .foregroundStyle(theme.accent)
                     .padding(.horizontal, 22)
                     .frame(height: 44)
-                    .background(Capsule().fill(theme.tideSoft))
+                    .background(Capsule().fill(theme.surface2))
             }
             .buttonStyle(PressScale(scale: 0.95))
         }

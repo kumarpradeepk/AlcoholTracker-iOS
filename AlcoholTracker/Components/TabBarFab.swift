@@ -30,9 +30,9 @@ struct AppTabBar: View {
         .padding(.top, 10)
         .padding(.bottom, 4)
         .background(
-            theme.glass
+            theme.surface
                 .background(.ultraThinMaterial)
-                .overlay(alignment: .top) { Rectangle().fill(theme.hair).frame(height: 0.5) }
+                .overlay(alignment: .top) { Rectangle().fill(theme.line).frame(height: 0.5) }
                 .ignoresSafeArea(edges: .bottom)
         )
     }
@@ -52,12 +52,12 @@ struct AppTabBar: View {
         } label: {
             VStack(spacing: 4) {
                 TabGlyphAnimator(active: active, reduceMotion: reduceMotion) { progress in
-                    glyph(active ? theme.tide : theme.ter, progress)
+                    glyph(active ? theme.accent : theme.faint, progress)
                 }
                 .frame(width: 22, height: 19)
                 Text(label)
-                    .font(.system(size: 10.5, weight: .semibold))
-                    .foregroundStyle(active ? theme.tide : theme.ter)
+                    .font(theme.fonts.body(10.5, .semibold))
+                    .foregroundStyle(active ? theme.accent : theme.faint)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 4)
@@ -167,11 +167,11 @@ struct DiaryFab: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 10) {
-            fabAction(L.s("action_dry_day"), color: theme.moss, delay: 0.05) {
+            fabAction(L.s("action_dry_day"), color: theme.b1, delay: 0.05) {
                 model.fabOpen = false
                 model.markDry(key: model.selectedKey)
             }
-            fabAction(L.s("action_log_drink"), color: theme.tide, delay: 0) {
+            fabAction(L.s("action_log_drink"), color: theme.accent, delay: 0) {
                 model.fabOpen = false
                 model.openSheet(.log)
             }
@@ -181,7 +181,7 @@ struct DiaryFab: View {
                 withAnimation(Motion.pop) { model.fabOpen.toggle() }
             } label: {
                 Circle()
-                    .fill(theme.tide)
+                    .fill(theme.accent)
                     .frame(width: 58, height: 58)
                     .overlay(
                         CocktailGlyph()
@@ -200,13 +200,13 @@ struct DiaryFab: View {
     private func fabAction(_ title: String, color: Color, delay: Double, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 14.5, weight: .semibold))
+                .font(theme.fonts.body(14.5, .semibold))
                 .foregroundStyle(color)
                 .padding(.horizontal, 18)
                 .frame(height: 42)
                 .background(
                     Capsule()
-                        .fill(theme.card)
+                        .fill(theme.surface)
                         .shadow(color: .black.opacity(0.14), radius: 12, y: 8)
                 )
         }

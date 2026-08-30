@@ -32,11 +32,11 @@ struct GlassIcon: View {
 
     var body: some View {
         shape
-            .strokeBorder(theme.hair, lineWidth: 2)
+            .strokeBorder(theme.line, lineWidth: 2)
             .background(
                 GeometryReader { geo in
                     Rectangle()
-                        .fill((liquid ?? theme.tide).opacity(0.55))
+                        .fill((liquid ?? theme.accent).opacity(0.55))
                         .frame(height: geo.size.height * GlassMath.fillFraction(abv: abv))
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
@@ -64,7 +64,7 @@ struct AnimatedGlass: View {
     @State private var breathe = false
 
     var body: some View {
-        let tint = liquid ?? theme.tide
+        let tint = liquid ?? theme.accent
         ZStack(alignment: .topTrailing) {
             TimelineView(.animation(minimumInterval: reduceMotion ? 1 : 1 / 30, paused: reduceMotion)) { timeline in
                 let t = timeline.date.timeIntervalSinceReferenceDate
@@ -106,12 +106,12 @@ struct AnimatedGlass: View {
             .frame(width: width, height: height)
             .clipShape(vesselShape)
             .overlay(
-                vesselShape.strokeBorder(outline ?? theme.ink.opacity(0.22), lineWidth: 2.5)
+                vesselShape.strokeBorder(outline ?? theme.text.opacity(0.22), lineWidth: 2.5)
             )
 
             if showCheck {
                 Circle()
-                    .fill(theme.moss)
+                    .fill(theme.b1)
                     .frame(width: 24, height: 24)
                     .overlay(
                         Image(systemName: "checkmark")

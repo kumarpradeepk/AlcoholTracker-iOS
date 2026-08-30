@@ -22,6 +22,7 @@ struct PushRouter: View {
                 case .backup: BackupPush(model: model, settings: settings)
                 case .about: AboutPush()
                 case .icon: IconPush(model: model, settings: settings)
+                case .theme: ThemePush(settings: settings)
                 case .bacTrends: BacTrendsPush(model: model, settings: settings)
                 case .guideline: GuidelinePush(settings: settings)
                 }
@@ -43,24 +44,24 @@ struct ProfilePush: View {
                 AnimatedGlass(width: 58, height: 76)
                 VStack(alignment: .leading, spacing: 5) {
                     Text(L.s("profile_headline"))
-                        .font(.system(size: 19, weight: .bold))
+                        .font(theme.fonts.display(19))
                     Text(L.s("profile_body"))
-                        .font(.system(size: 13.5))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(13.5))
+                        .foregroundStyle(theme.muted)
                         .lineSpacing(3)
                 }
             }
             .padding(.top, 6)
 
             Text(L.s("profile_privacy_note"))
-                .font(.system(size: 12.5))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(12.5))
+                .foregroundStyle(theme.faint)
                 .padding(.top, 12)
 
             VStack(alignment: .leading, spacing: 10) {
                 Text(L.s("profile_sex_label"))
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13, .semibold))
+                    .foregroundStyle(theme.muted)
                 SegmentedPill(
                     options: [(Sex.female, Sex.female.label), (Sex.male, Sex.male.label)],
                     selection: Binding(
@@ -78,8 +79,8 @@ struct ProfilePush: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     Text(L.s("profile_weight_label"))
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(13, .semibold))
+                        .foregroundStyle(theme.muted)
                     Spacer()
                     SegmentedPill(
                         options: [(true, L.s("profile_weight_kg")), (false, L.s("profile_weight_lb"))],
@@ -90,12 +91,12 @@ struct ProfilePush: View {
                 }
                 TextField(L.s("profile_weight_placeholder"), text: $settings.weightText)
                     .keyboardType(.decimalPad)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(theme.fonts.display(17))
                     .monospacedDigit()
                     .multilineTextAlignment(.center)
                     .frame(height: 48)
                     .frame(maxWidth: .infinity)
-                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.card2))
+                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.surface2))
                     .padding(.top, 12)
             }
             .padding(16)
@@ -113,8 +114,8 @@ struct ProfilePush: View {
             .padding(.top, 18)
 
             Text(L.s("profile_footer"))
-                .font(.system(size: 12.5))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(12.5))
+                .foregroundStyle(theme.faint)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 10)
         }
@@ -141,8 +142,8 @@ struct UnitsPush: View {
             )
             .padding(.top, 12)
             Text(L.s("units_note"))
-                .font(.system(size: 13))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(13))
+                .foregroundStyle(theme.faint)
                 .lineSpacing(2)
                 .padding(.horizontal, 4)
                 .padding(.top, 14)
@@ -152,8 +153,8 @@ struct UnitsPush: View {
     private func segCard<T: Hashable>(title: String, options: [(T, String)], selection: Binding<T>) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(13, .semibold))
+                .foregroundStyle(theme.muted)
             SegmentedPill(options: options, selection: selection)
         }
         .padding(16)
@@ -179,8 +180,8 @@ struct NotificationsPush: View {
                     }
                 }
                 Text(L.s("notif_repeat_hint"))
-                    .font(.system(size: 12.5))
-                    .foregroundStyle(theme.ter)
+                    .font(theme.fonts.body(12.5))
+                    .foregroundStyle(theme.faint)
                     .padding(.horizontal, 4)
                     .padding(.top, 10)
             }
@@ -195,12 +196,12 @@ struct NotificationsPush: View {
     private func reminderRow(_ item: ReminderItem) -> some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.title).font(.system(size: 15, weight: .semibold))
+                Text(item.title).font(theme.fonts.body(15, .semibold))
                 Text(item.message.isEmpty
                      ? timeLabel(item)
                      : L.f("notif_reminder_sub", timeLabel(item), item.message))
-                    .font(.system(size: 13))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13))
+                    .foregroundStyle(theme.muted)
                     .lineLimit(1)
             }
             Spacer()
@@ -210,9 +211,9 @@ struct NotificationsPush: View {
             } label: {
                 Image(systemName: "minus")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(theme.danger)
+                    .foregroundStyle(theme.b3)
                     .frame(width: 28, height: 28)
-                    .background(Circle().fill(theme.card2))
+                    .background(Circle().fill(theme.surface2))
             }
             .buttonStyle(PressScale(scale: 0.85))
             .accessibilityLabel(L.f("a11y_remove_reminder", item.title))
@@ -221,7 +222,7 @@ struct NotificationsPush: View {
         .padding(.vertical, 8)
         .frame(minHeight: 56)
         .overlay(alignment: .bottom) {
-            Rectangle().fill(theme.hair).frame(height: 0.5).padding(.leading, 16)
+            Rectangle().fill(theme.line).frame(height: 0.5).padding(.leading, 16)
         }
     }
 
@@ -242,11 +243,11 @@ struct NotificationsPush: View {
             .frame(width: 84, height: 84)
 
             Text(L.s("notif_empty_title"))
-                .font(.system(size: 18, weight: .semibold))
+                .font(theme.fonts.display(18))
                 .padding(.top, 18)
             Text(L.s("notif_empty_body"))
-                .font(.system(size: 14))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(14))
+                .foregroundStyle(theme.muted)
                 .multilineTextAlignment(.center)
                 .lineSpacing(3)
                 .frame(maxWidth: 260)
@@ -276,7 +277,7 @@ struct RippleRings: View {
                         x: (size.width - d) / 2, y: (size.height - d) / 2,
                         width: d, height: d
                     )
-                    context.stroke(Path(ellipseIn: rect), with: .color(theme.tide.opacity(alpha)), lineWidth: 1.5)
+                    context.stroke(Path(ellipseIn: rect), with: .color(theme.accent.opacity(alpha)), lineWidth: 1.5)
                 }
                 ring(phase: 0)
                 ring(phase: 1.8)
@@ -301,18 +302,18 @@ struct NewNotificationSheet: View {
             SheetGrabber().frame(maxWidth: .infinity)
 
             Text(L.s("notif_create_cta"))
-                .font(.system(size: 20, weight: .bold))
+                .font(theme.fonts.display(20))
                 .padding(.top, 8)
 
             TextField(L.s("sheet_notif_title_placeholder"), text: $title)
-                .font(.system(size: 15.5))
+                .font(theme.fonts.body(15.5))
                 .padding(.horizontal, 16)
                 .frame(height: 48)
-                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.card2))
+                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.surface2))
                 .padding(.top, 14)
 
             HStack {
-                Text(L.s("sheet_notif_time_label")).font(.system(size: 15, weight: .semibold))
+                Text(L.s("sheet_notif_time_label")).font(theme.fonts.body(15, .semibold))
                 Spacer()
                 DatePicker("", selection: $time, displayedComponents: .hourAndMinute)
                     .labelsHidden()
@@ -323,15 +324,15 @@ struct NewNotificationSheet: View {
             .padding(.top, 10)
 
             TextField(L.s("sheet_notif_message_placeholder"), text: $message)
-                .font(.system(size: 15.5))
+                .font(theme.fonts.body(15.5))
                 .padding(.horizontal, 16)
                 .frame(height: 48)
-                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.card2))
+                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.surface2))
                 .padding(.top, 10)
 
             Text(L.s("sheet_notif_repeat_note"))
-                .font(.system(size: 12.5))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(12.5))
+                .foregroundStyle(theme.faint)
                 .padding(.top, 10)
 
             PrimaryButton(title: L.s("sheet_notif_cta"), enabled: !title.trimmingCharacters(in: .whitespaces).isEmpty, height: 50) {
@@ -365,10 +366,10 @@ struct BacMonitorPush: View {
             SettingsGroup {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(L.s("bac_monitor")).font(.system(size: 15.5))
+                        Text(L.s("bac_monitor")).font(theme.fonts.body(15.5))
                         Text(L.s("set_bac_row_sub"))
-                            .font(.system(size: 12.5))
-                            .foregroundStyle(theme.sec)
+                            .font(theme.fonts.body(12.5))
+                            .foregroundStyle(theme.muted)
                     }
                     Spacer()
                     AppToggle(isOn: $settings.bacOn)
@@ -377,11 +378,11 @@ struct BacMonitorPush: View {
                 .padding(.vertical, 10)
                 .frame(minHeight: 56)
                 .overlay(alignment: .bottom) {
-                    Rectangle().fill(theme.hair).frame(height: 0.5).padding(.leading, 16)
+                    Rectangle().fill(theme.line).frame(height: 0.5).padding(.leading, 16)
                 }
 
                 HStack {
-                    Text(L.s("set_bac_unit_label")).font(.system(size: 15.5))
+                    Text(L.s("set_bac_unit_label")).font(theme.fonts.body(15.5))
                     Spacer()
                     SegmentedPill(
                         options: [(BacUnit.percent, BacUnit.percent.label), (BacUnit.permille, BacUnit.permille.label)],
@@ -398,11 +399,11 @@ struct BacMonitorPush: View {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L.s("set_bac_preview_title"))
-                            .font(.system(size: 15.5))
-                            .foregroundStyle(theme.ink)
+                            .font(theme.fonts.body(15.5))
+                            .foregroundStyle(theme.text)
                         Text(L.s("set_bac_preview_sub"))
-                            .font(.system(size: 12.5))
-                            .foregroundStyle(theme.sec)
+                            .font(theme.fonts.body(12.5))
+                            .foregroundStyle(theme.muted)
                     }
                     Spacer()
                     ChevronRight()
@@ -415,12 +416,12 @@ struct BacMonitorPush: View {
             .padding(.top, 12)
 
             Text(L.s("set_bac_disclaimer"))
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(theme.amber)
+                .font(theme.fonts.body(13, .medium))
+                .foregroundStyle(theme.b2)
                 .lineSpacing(2)
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(theme.amberSoft))
+                .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(theme.surface2))
                 .padding(.top, 14)
         }
     }
@@ -441,15 +442,15 @@ struct WatchPush: View {
                 Spacer()
                 VStack(spacing: 7) {
                     Text(L.s("quicklog_mock_caption"))
-                        .font(.system(size: 8.5, weight: .semibold))
+                        .font(theme.fonts.body(8.5, .semibold))
                         .kerning(0.5)
                         .foregroundStyle(.white.opacity(0.55))
                     watchPill(model.savedDrinks.first(where: \.onWatch)?.name ?? "Margarita",
-                              tint: Color(hex: 0x9FC6DC), bg: Color(hex: 0x7EB0CC).opacity(0.25))
+                              tint: DrinkTints.cocktail, bg: DrinkTints.cocktail.opacity(0.3))
                     watchPill(model.savedDrinks.filter(\.onWatch).dropFirst().first?.name ?? "Gin & Tonic",
-                              tint: Color(hex: 0xA9CBB0), bg: Color(hex: 0x8CB694).opacity(0.22))
+                              tint: DrinkTints.beer, bg: DrinkTints.beer.opacity(0.25))
                     Text(L.s("quicklog_mock_footer"))
-                        .font(.system(size: 9))
+                        .font(theme.fonts.body(9))
                         .foregroundStyle(.white.opacity(0.4))
                 }
                 .frame(width: 132, height: 160)
@@ -468,18 +469,18 @@ struct WatchPush: View {
             HStack {
                 SectionCaption(L.s("quicklog_section_caption"))
                 Text(L.f("quicklog_selected_count", selectedCount, 4))
-                    .font(.system(size: 12.5))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(12.5))
+                    .foregroundStyle(theme.muted)
             }
             .padding(.top, 16)
 
             if model.savedDrinks.isEmpty {
                 VStack(spacing: 5) {
                     Text(L.s("quicklog_empty_title"))
-                        .font(.system(size: 14.5, weight: .semibold))
+                        .font(theme.fonts.body(14.5, .semibold))
                     Text(L.s("quicklog_empty_sub"))
-                        .font(.system(size: 13))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(13))
+                        .foregroundStyle(theme.muted)
                         .multilineTextAlignment(.center)
                         .lineSpacing(2)
                 }
@@ -494,8 +495,8 @@ struct WatchPush: View {
                             HStack(spacing: 12) {
                                 ZStack {
                                     Circle()
-                                        .strokeBorder(drink.onWatch ? theme.tide : theme.hair, lineWidth: 1.5)
-                                        .background(Circle().fill(drink.onWatch ? theme.tide : .clear))
+                                        .strokeBorder(drink.onWatch ? theme.accent : theme.line, lineWidth: 1.5)
+                                        .background(Circle().fill(drink.onWatch ? theme.accent : .clear))
                                         .frame(width: 22, height: 22)
                                     if drink.onWatch {
                                         Image(systemName: "checkmark")
@@ -504,12 +505,12 @@ struct WatchPush: View {
                                     }
                                 }
                                 Text(drink.name)
-                                    .font(.system(size: 15, weight: .medium))
-                                    .foregroundStyle(theme.ink)
+                                    .font(theme.fonts.body(15, .medium))
+                                    .foregroundStyle(theme.text)
                                 Spacer()
                                 Text(L.f("quicklog_drink_meta", Int(drink.ml), Formatters.trim(drink.abv)))
-                                    .font(.system(size: 13))
-                                    .foregroundStyle(theme.sec)
+                                    .font(theme.fonts.body(13))
+                                    .foregroundStyle(theme.muted)
                             }
                             .padding(.horizontal, 16)
                             .frame(minHeight: 52)
@@ -517,21 +518,21 @@ struct WatchPush: View {
                         }
                         .buttonStyle(.plain)
                         .overlay(alignment: .bottom) {
-                            Rectangle().fill(theme.hair).frame(height: 0.5).padding(.leading, 16)
+                            Rectangle().fill(theme.line).frame(height: 0.5).padding(.leading, 16)
                         }
                     }
                 }
                 .padding(.top, 8)
             }
 
-            SoftButton(title: L.s("log_custom_title"), background: theme.tideSoft, foreground: theme.tide) {
+            SoftButton(title: L.s("log_custom_title"), background: theme.surface2, foreground: theme.accent) {
                 model.openSheet(.customDrink)
             }
             .padding(.top, 12)
 
             Text(L.s("quicklog_watch_footer"))
-                .font(.system(size: 12.5))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(12.5))
+                .foregroundStyle(theme.faint)
                 .multilineTextAlignment(.center)
                 .lineSpacing(3)
                 .frame(maxWidth: .infinity)
@@ -541,7 +542,7 @@ struct WatchPush: View {
 
     private func watchPill(_ label: String, tint: Color, bg: Color) -> some View {
         Text(label)
-            .font(.system(size: 10, weight: .semibold))
+            .font(theme.fonts.body(10, .semibold))
             .foregroundStyle(tint)
             .lineLimit(1)
             .frame(width: 92, height: 26)
@@ -562,24 +563,24 @@ struct BackupPush: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 10) {
-                Circle().fill(theme.moss).frame(width: 8, height: 8)
+                Circle().fill(theme.b1).frame(width: 8, height: 8)
                 Text(BackupManager.statusLine(lastBackupAt: settings.lastBackupAt))
-                    .font(.system(size: 13.5, weight: .semibold))
-                    .foregroundStyle(theme.moss)
+                    .font(theme.fonts.body(13.5, .semibold))
+                    .foregroundStyle(theme.b1)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(theme.mossSoft))
+            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(theme.surface2))
 
             VStack(alignment: .leading, spacing: 12) {
                 Text(L.s("backup_whats_here"))
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13, .semibold))
+                    .foregroundStyle(theme.muted)
                 HStack(spacing: 10) {
-                    countTile("\(model.logs.count)", L.f("backup_count_logs", model.logs.count), tint: theme.ink)
-                    countTile("\(model.dryDays.count)", L.f("backup_count_dry", model.dryDays.count), tint: theme.moss)
-                    countTile("1", L.s("backup_count_profile"), tint: theme.ink)
+                    countTile("\(model.logs.count)", L.f("backup_count_logs", model.logs.count), tint: theme.text)
+                    countTile("\(model.dryDays.count)", L.f("backup_count_dry", model.dryDays.count), tint: theme.b1)
+                    countTile("1", L.s("backup_count_profile"), tint: theme.text)
                 }
             }
             .padding(16)
@@ -607,24 +608,24 @@ struct BackupPush: View {
             .padding(.top, 12)
 
             Text(L.s("backup_merge_note"))
-                .font(.system(size: 12.5))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(12.5))
+                .foregroundStyle(theme.faint)
                 .lineSpacing(2)
                 .padding(.horizontal, 4)
                 .padding(.top, 10)
 
             Text(L.s("backup_danger_zone"))
-                .font(.system(size: 12, weight: .semibold))
+                .font(theme.fonts.body(12, .semibold))
                 .kerning(0.6)
-                .foregroundStyle(theme.danger)
+                .foregroundStyle(theme.b3)
                 .padding(.leading, 4)
                 .padding(.top, 22)
 
             SettingsGroup {
                 Button { model.dialog = .clearAll } label: {
                     Text(L.s("backup_clear_all"))
-                        .font(.system(size: 15.5, weight: .medium))
-                        .foregroundStyle(theme.danger)
+                        .font(theme.fonts.body(15.5, .medium))
+                        .foregroundStyle(theme.b3)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
                         .frame(minHeight: 52)
@@ -635,8 +636,8 @@ struct BackupPush: View {
             .padding(.top, 8)
 
             Text(L.s("backup_clear_note"))
-                .font(.system(size: 12.5))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(12.5))
+                .foregroundStyle(theme.faint)
                 .lineSpacing(2)
                 .padding(.horizontal, 4)
                 .padding(.top, 10)
@@ -669,23 +670,23 @@ struct BackupPush: View {
     private func countTile(_ value: String, _ label: String, tint: Color) -> some View {
         VStack(spacing: 2) {
             Text(value)
-                .font(.system(size: 19, weight: .bold))
+                .font(theme.fonts.display(19))
                 .monospacedDigit()
                 .foregroundStyle(tint)
             Text(label)
-                .font(.system(size: 11.5))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(11.5))
+                .foregroundStyle(theme.muted)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.card2))
+        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.surface2))
     }
 
     private func actionRow(_ title: String, isLast: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 15.5, weight: .medium))
-                .foregroundStyle(theme.tide)
+                .font(theme.fonts.body(15.5, .medium))
+                .foregroundStyle(theme.accent)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
                 .frame(minHeight: 52)
@@ -694,7 +695,7 @@ struct BackupPush: View {
         .buttonStyle(.plain)
         .overlay(alignment: .bottom) {
             if !isLast {
-                Rectangle().fill(theme.hair).frame(height: 0.5).padding(.leading, 16)
+                Rectangle().fill(theme.line).frame(height: 0.5).padding(.leading, 16)
             }
         }
     }
@@ -710,13 +711,13 @@ struct AboutPush: View {
             VStack(spacing: 0) {
                 DropletMark(size: 44)
                 Text(L.s("app_name"))
-                    .font(.system(size: 17, weight: .bold))
+                    .font(theme.fonts.display(17))
                     .padding(.top, 16)
                 // "Still Water" is a release codename — a proper noun the
                 // inventory marks as never translated.
                 Text(L.f("about_version", L.s("set_about_version_value"), "Still Water"))
-                    .font(.system(size: 13))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13))
+                    .foregroundStyle(theme.muted)
                     .padding(.top, 3)
             }
             .frame(maxWidth: .infinity)
@@ -741,8 +742,8 @@ struct AboutPush: View {
             .padding(.top, 8)
 
             Text(L.s("about_footer"))
-                .font(.system(size: 12))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(12))
+                .foregroundStyle(theme.faint)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .frame(maxWidth: .infinity)
@@ -756,8 +757,8 @@ struct AboutPush: View {
         } label: {
             HStack {
                 Text(title)
-                    .font(.system(size: 15.5))
-                    .foregroundStyle(theme.ink)
+                    .font(theme.fonts.body(15.5))
+                    .foregroundStyle(theme.text)
                 Spacer()
                 ChevronRight()
             }
@@ -768,24 +769,24 @@ struct AboutPush: View {
         .buttonStyle(.plain)
         .overlay(alignment: .bottom) {
             if !isLast {
-                Rectangle().fill(theme.hair).frame(height: 0.5).padding(.leading, 16)
+                Rectangle().fill(theme.line).frame(height: 0.5).padding(.leading, 16)
             }
         }
     }
 
     private func ackRow(_ name: String, _ role: String, isLast: Bool = false) -> some View {
         HStack {
-            Text(name).font(.system(size: 15))
+            Text(name).font(theme.fonts.body(15))
             Spacer()
             Text(role)
-                .font(.system(size: 13))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(13))
+                .foregroundStyle(theme.faint)
         }
         .padding(.horizontal, 16)
         .frame(minHeight: 48)
         .overlay(alignment: .bottom) {
             if !isLast {
-                Rectangle().fill(theme.hair).frame(height: 0.5).padding(.leading, 16)
+                Rectangle().fill(theme.line).frame(height: 0.5).padding(.leading, 16)
             }
         }
     }
@@ -807,8 +808,8 @@ struct IconPush: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(L.s("icon_intro"))
-                .font(.system(size: 14))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(14))
+                .foregroundStyle(theme.muted)
                 .lineSpacing(2)
 
             HStack(spacing: 14) {
@@ -827,12 +828,12 @@ struct IconPush: View {
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                        .strokeBorder(settings.iconIndex == i ? theme.tide : .clear, lineWidth: 2.5)
+                                        .strokeBorder(settings.iconIndex == i ? theme.accent : .clear, lineWidth: 2.5)
                                 )
                                 .shadow(color: .black.opacity(0.1), radius: 9, y: 6)
                             Text(icon.name)
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(theme.sec)
+                                .font(theme.fonts.body(13, .semibold))
+                                .foregroundStyle(theme.muted)
                         }
                     }
                     .buttonStyle(PressScale(scale: 0.93))
@@ -870,10 +871,10 @@ struct BacTrendsPush: View {
         VStack(alignment: .leading, spacing: 0) {
             if let peaks = model.bacWeekPeaks, peaks.contains(where: { $0 > 0 }) {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(L.s("trends_title")).font(.system(size: 15, weight: .semibold))
+                    Text(L.s("trends_title")).font(theme.fonts.body(15, .semibold))
                     Text(L.s("trends_range"))
-                        .font(.system(size: 12.5))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(12.5))
+                        .foregroundStyle(theme.muted)
                         .padding(.top, 3)
                     TrendLineChart(values: peaks)
                         .padding(.top, 12)
@@ -882,16 +883,16 @@ struct BacTrendsPush: View {
                         Spacer()
                         Text(L.s("trends_axis_end"))
                     }
-                    .font(.system(size: 10.5))
-                    .foregroundStyle(theme.ter)
+                    .font(theme.fonts.body(10.5))
+                    .foregroundStyle(theme.faint)
                     .padding(.top, 4)
                 }
                 .padding(18)
                 .card()
 
                 Text(L.s("trends_note"))
-                    .font(.system(size: 13))
-                    .foregroundStyle(theme.sec)
+                    .font(theme.fonts.body(13))
+                    .foregroundStyle(theme.muted)
                     .lineSpacing(3)
                     .padding(.horizontal, 4)
                     .padding(.top, 14)
@@ -899,11 +900,11 @@ struct BacTrendsPush: View {
                 VStack(spacing: 0) {
                     AnimatedGlass(width: 72, height: 96)
                     Text(L.s("trends_empty_title"))
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(theme.fonts.display(17))
                         .padding(.top, 18)
                     Text(L.s("trends_empty_body"))
-                        .font(.system(size: 14))
-                        .foregroundStyle(theme.sec)
+                        .font(theme.fonts.body(14))
+                        .foregroundStyle(theme.muted)
                         .multilineTextAlignment(.center)
                         .lineSpacing(3)
                         .frame(maxWidth: 250)
@@ -925,8 +926,8 @@ struct GuidelinePush: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(L.unit("guideline_intro", UnitsConfig.current.noun(.plural)))
-                .font(.system(size: 14))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(14))
+                .foregroundStyle(theme.muted)
                 .lineSpacing(3)
 
             goalCard(
@@ -946,8 +947,8 @@ struct GuidelinePush: View {
             .padding(.top, 12)
 
             Text(L.unit("guideline_monthly_note", settings.monthlyGoal, UnitsConfig.current.noun(.plural)))
-                .font(.system(size: 13))
-                .foregroundStyle(theme.ter)
+                .font(theme.fonts.body(13))
+                .foregroundStyle(theme.faint)
                 .lineSpacing(3)
                 .padding(.horizontal, 4)
                 .padding(.top, 14)
@@ -957,15 +958,15 @@ struct GuidelinePush: View {
     private func goalCard(title: String, value: Int, decrement: @escaping () -> Void, increment: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(theme.sec)
+                .font(theme.fonts.body(13, .semibold))
+                .foregroundStyle(theme.muted)
             HStack {
                 stepCircle("minus", decrement)
                 Spacer()
                 // One whole phrase: gendered numerals and classifiers make the
                 // number and the unit noun inseparable outside English.
                 Text(L.unit("guideline_target_units", value, UnitsConfig.current.noun(count: value)))
-                    .font(.system(size: 30, weight: .bold))
+                    .font(theme.fonts.display(30))
                     .monospacedDigit()
                     .contentTransition(.numericText())
                     .animation(Motion.fade, value: value)
@@ -985,10 +986,109 @@ struct GuidelinePush: View {
         } label: {
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(theme.sec)
+                .foregroundStyle(theme.muted)
                 .frame(width: 44, height: 44)
-                .background(Circle().fill(theme.card2))
+                .background(Circle().fill(theme.surface2))
         }
         .buttonStyle(PressScale(scale: 0.86))
+    }
+}
+
+
+// MARK: - Theme
+
+/// The canvas's theme cards. Each row previews the theme in its *own* colours
+/// rather than the active one, so the choice is legible before it is made.
+struct ThemePush: View {
+    @Environment(\.theme) private var theme
+    @ObservedObject var settings: AppSettings
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(L.s("theme_intro"))
+                .font(theme.fonts.body(13))
+                .foregroundStyle(theme.muted)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+
+            SectionCaption(L.s("theme_caption"))
+                .padding(.top, 18)
+                .padding(.bottom, 8)
+
+            VStack(spacing: 8) {
+                ForEach(Array(AppTheme.allCases.enumerated()), id: \.element) { index, option in
+                    themeCard(option)
+                        .riseIn(delay: Double(index) * 0.045)
+                }
+            }
+
+            SectionCaption(L.s("theme_scheme_caption"))
+                .padding(.top, 22)
+                .padding(.bottom, 8)
+
+            // Light/dark is a separate axis: every theme is designed in both,
+            // so this never disables and never depends on the theme above.
+            SegmentedPill(
+                options: [
+                    (AppearanceOverride.system, L.s("theme_scheme_system")),
+                    (AppearanceOverride.light, L.s("theme_scheme_light")),
+                    (AppearanceOverride.dark, L.s("theme_scheme_dark"))
+                ],
+                selection: $settings.appearance,
+                fontSize: 13
+            )
+        }
+    }
+
+    private func themeCard(_ option: AppTheme) -> some View {
+        // Swatches come from the theme's own light palette, not the active one.
+        let preview = Theme.resolve(option, dark: false)
+        let selected = settings.theme == option
+        return Button {
+            withAnimation(Motion.fade) { settings.theme = option }
+            Haptics.light()
+        } label: {
+            HStack(spacing: 12) {
+                HStack(spacing: 0) {
+                    preview.bg
+                    preview.accent
+                    preview.accent2
+                }
+                .frame(width: 46, height: 46)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(option.displayName)
+                        .font(theme.fonts.body(14, .bold))
+                        .foregroundStyle(theme.text)
+                    Text(option.blurb)
+                        .font(theme.fonts.body(11.5))
+                        .foregroundStyle(theme.muted)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                ZStack {
+                    Circle()
+                        .fill(selected ? theme.accent : .clear)
+                        .overlay(Circle().strokeBorder(selected ? theme.accent : theme.line, lineWidth: 1.5))
+                        .frame(width: 20, height: 20)
+                    if selected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(theme.onAccent)
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 11)
+            .card(bordered: false)
+            .overlay(
+                RoundedRectangle(cornerRadius: theme.radii.r, style: .continuous)
+                    .strokeBorder(selected ? theme.accent : theme.line, lineWidth: selected ? 1.5 : 1)
+            )
+        }
+        .buttonStyle(PressScale(scale: 0.98))
+        .accessibilityLabel("\(option.displayName). \(option.blurb)")
+        .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
     }
 }
