@@ -45,29 +45,29 @@ struct PaywallView: View {
                             .padding(.bottom, 20)
 
                         Text(L.s("pay_title"))
-                            .font(theme.fonts.display(29))
+                            .font(Fonts.figure(29))
                             .kerning(-0.5)
                         Text(L.s("pay_sub"))
-                            .font(theme.fonts.body(15.5))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(15.5))
+                            .foregroundStyle(theme.sub)
                             .padding(.top, 6)
 
                         HStack(spacing: 8) {
-                            Circle().fill(theme.b1).frame(width: 7, height: 7)
+                            Circle().fill(theme.moss).frame(width: 7, height: 7)
                             Text(L.s("pay_no_ads"))
-                                .font(theme.fonts.body(12.5, .semibold))
-                                .foregroundStyle(theme.b1)
+                                .font(Fonts.text(12.5, .semibold))
+                                .foregroundStyle(theme.moss)
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
-                        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(theme.surface2))
+                        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(theme.elev))
                         .padding(.top, 12)
 
                         VStack(alignment: .leading, spacing: 12) {
                             ForEach(Array(PaywallContent.benefits.enumerated()), id: \.offset) { i, benefit in
                                 HStack(spacing: 12) {
-                                    Circle().fill(theme.accent).frame(width: 7, height: 7)
-                                    Text(benefit).font(theme.fonts.body(15))
+                                    Circle().fill(theme.acc).frame(width: 7, height: 7)
+                                    Text(benefit).font(Fonts.text(15))
                                 }
                                 .riseIn(delay: Double(i) * 0.045)
                             }
@@ -81,9 +81,9 @@ struct PaywallView: View {
                             .padding(.top, 20)
 
                         Text(L.s("pay_faq_caption"))
-                            .font(theme.fonts.body(13, .semibold))
+                            .font(Fonts.text(13, .semibold))
                             .kerning(0.6)
-                            .foregroundStyle(theme.faint)
+                            .foregroundStyle(theme.sub)
                             .padding(.top, 22)
 
                         faqCard
@@ -103,8 +103,8 @@ struct PaywallView: View {
                         .opacity(plan == nil || entitlements.purchaseInFlight ? 0.45 : 1)
                     if let sub = PaywallContent.subCopy(for: plan) {
                         Text(sub)
-                            .font(theme.fonts.body(12.5))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(12.5))
+                            .foregroundStyle(theme.sub)
                             .multilineTextAlignment(.center)
                             .padding(.top, 9)
                     }
@@ -126,7 +126,7 @@ struct PaywallView: View {
                 .padding(.bottom, 12)
                 .background(
                     LinearGradient(
-                        colors: [theme.bg.opacity(0), theme.bg],
+                        colors: [theme.page.opacity(0), theme.page],
                         startPoint: .top, endPoint: UnitPoint(x: 0.5, y: 0.26)
                     )
                     .ignoresSafeArea(edges: .bottom)
@@ -140,7 +140,7 @@ struct PaywallView: View {
             .padding(.top, 14)
             .accessibilityLabel(L.s("a11y_close"))
         }
-        .background(theme.bg.ignoresSafeArea())
+        .background(theme.page.ignoresSafeArea())
         .riseIn()
     }
 
@@ -153,23 +153,23 @@ struct PaywallView: View {
                 Text(L.s("pay_compare_free")).frame(width: 44)
                 Text(L.s("pay_compare_pro")).frame(width: 44)
             }
-            .font(theme.fonts.body(11, .semibold))
+            .font(Fonts.text(11, .semibold))
             .kerning(0.6)
-            .foregroundStyle(theme.faint)
+            .foregroundStyle(theme.sub)
             .padding(.vertical, 10)
 
             ForEach(Array(PaywallContent.comparison.enumerated()), id: \.offset) { _, row in
                 HStack {
                     Text(row.0)
-                        .font(theme.fonts.body(14))
+                        .font(Fonts.text(14))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text(row.1 ? "✓" : "·")
-                        .font(theme.fonts.body(14, .semibold))
-                        .foregroundStyle(row.1 ? theme.b1 : theme.faint)
+                        .font(Fonts.text(14, .semibold))
+                        .foregroundStyle(row.1 ? theme.moss : theme.sub)
                         .frame(width: 44)
                     Text(row.2 ? "✓" : "·")
-                        .font(theme.fonts.body(14, .semibold))
-                        .foregroundStyle(theme.accent)
+                        .font(Fonts.text(14, .semibold))
+                        .foregroundStyle(theme.acc)
                         .frame(width: 44)
                 }
                 .padding(.vertical, 10)
@@ -192,17 +192,17 @@ struct PaywallView: View {
         } else if entitlements.loaded {
             VStack(alignment: .leading, spacing: 10) {
                 Text(L.s("pay_unavailable"))
-                    .font(theme.fonts.body(14))
-                    .foregroundStyle(theme.muted)
+                    .font(Fonts.text(14))
+                    .foregroundStyle(theme.sub)
                 Button(L.s("pay_retry")) { Task { await entitlements.refresh() } }
-                    .font(theme.fonts.body(14, .semibold))
-                    .foregroundStyle(theme.accent)
+                    .font(Fonts.text(14, .semibold))
+                    .foregroundStyle(theme.acc)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
             Text(L.s("pay_loading"))
-                .font(theme.fonts.body(14))
-                .foregroundStyle(theme.faint)
+                .font(Fonts.text(14))
+                .foregroundStyle(theme.sub)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -216,34 +216,34 @@ struct PaywallView: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .strokeBorder(selected ? theme.accent : theme.line, lineWidth: 1.5)
-                        .background(Circle().fill(selected ? theme.accent : .clear))
+                        .strokeBorder(selected ? theme.acc : theme.line, lineWidth: 1.5)
+                        .background(Circle().fill(selected ? theme.acc : .clear))
                         .frame(width: 22, height: 22)
                     if selected {
                         Image(systemName: "checkmark")
                             .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(theme.onAccent)
+                            .foregroundStyle(theme.onAcc)
                             .transition(.scale.combined(with: .opacity))
                     }
                 }
                 VStack(alignment: .leading, spacing: 1) {
                     Text(PaywallContent.planName(plan.cadence))
-                        .font(theme.fonts.body(16, .semibold))
+                        .font(Fonts.text(16, .semibold))
                     Text(PaywallContent.priceLine(plan))
-                        .font(theme.fonts.body(13))
-                        .foregroundStyle(theme.muted)
+                        .font(Fonts.text(13))
+                        .foregroundStyle(theme.sub)
                 }
                 Spacer()
                 if let badge = PaywallContent.badge(plan) {
                     Text(badge.text)
-                        .font(theme.fonts.body(10, .bold))
+                        .font(Fonts.text(10, .bold))
                         .kerning(0.5)
-                        .foregroundStyle(badge.good ? theme.b1 : theme.b2)
+                        .foregroundStyle(badge.good ? theme.moss : theme.amber)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(badge.good ? theme.surface2 : theme.surface2)
+                                .fill(badge.good ? theme.elev : theme.elev)
                         )
                 }
             }
@@ -251,10 +251,10 @@ struct PaywallView: View {
             .padding(.vertical, 15)
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(selected ? theme.surface2 : theme.surface)
+                    .fill(selected ? theme.elev : theme.card)
                     .overlay(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .strokeBorder(selected ? theme.accent : .clear, lineWidth: 1.5)
+                            .strokeBorder(selected ? theme.acc : .clear, lineWidth: 1.5)
                     )
             )
         }
@@ -271,13 +271,13 @@ struct PaywallView: View {
                     } label: {
                         HStack {
                             Text(qa.0)
-                                .font(theme.fonts.body(14.5, .medium))
-                                .foregroundStyle(theme.text)
+                                .font(Fonts.text(14.5, .medium))
+                                .foregroundStyle(theme.ink)
                                 .multilineTextAlignment(.leading)
                             Spacer()
                             Image(systemName: "plus")
                                 .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(theme.faint)
+                                .foregroundStyle(theme.sub)
                                 .rotationEffect(.degrees(expandedFAQ == i ? 45 : 0))
                                 .animation(Motion.pop, value: expandedFAQ)
                         }
@@ -287,8 +287,8 @@ struct PaywallView: View {
 
                     if expandedFAQ == i {
                         Text(qa.1)
-                            .font(theme.fonts.body(13.5))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(13.5))
+                            .foregroundStyle(theme.sub)
                             .lineSpacing(3)
                             .padding(.top, 8)
                             .transition(.opacity.combined(with: .move(edge: .top)))
@@ -306,8 +306,8 @@ struct PaywallView: View {
 
     private func footerLink(_ title: String, action: @escaping () -> Void) -> some View {
         Button(title, action: action)
-            .font(theme.fonts.body(13))
-            .foregroundStyle(theme.faint)
+            .font(Fonts.text(13))
+            .foregroundStyle(theme.sub)
     }
 
     private func buy() {

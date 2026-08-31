@@ -60,7 +60,7 @@ struct LogSheet: View {
                 }
                 Spacer()
                 Text([L.s("action_log_drink"), L.s("log_title_tune"), L.s("log_title_review")][step])
-                    .font(theme.fonts.body(16.5, .semibold))
+                    .font(Fonts.text(16.5, .semibold))
                 Spacer()
                 CircleIconButton(systemName: "xmark", size: 32, onCard2: true) {
                     model.closeSheet()
@@ -92,7 +92,7 @@ struct LogSheet: View {
                 .padding(.top, 10)
                 .padding(.bottom, 12)
         }
-        .background(theme.bg)
+        .background(theme.page)
         .presentationDetents([.height(742), .large])
         .presentationCornerRadius(26)
         .presentationDragIndicator(.hidden)
@@ -148,38 +148,38 @@ struct LogSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(L.s("log_pick_intro"))
-                    .font(theme.fonts.body(14.5))
-                    .foregroundStyle(theme.muted)
+                    .font(Fonts.text(14.5))
+                    .foregroundStyle(theme.sub)
                     .lineSpacing(2)
 
                 TextField(L.s("log_search_placeholder"), text: $query)
-                    .font(theme.fonts.body(15.5))
+                    .font(Fonts.text(15.5))
                     .padding(.horizontal, 16)
                     .frame(height: 44)
-                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.surface2))
+                    .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(theme.elev))
                     .padding(.top, 14)
 
                 Button { model.openSheet(.customDrink) } label: {
                     HStack(spacing: 12) {
                         Text(verbatim: "+")
-                            .font(theme.fonts.body(20, .medium))
-                            .foregroundStyle(theme.accent)
+                            .font(Fonts.text(20, .medium))
+                            .foregroundStyle(theme.acc)
                             .frame(width: 34, height: 34)
-                            .background(RoundedRectangle(cornerRadius: 11, style: .continuous).fill(theme.surface2))
+                            .background(RoundedRectangle(cornerRadius: 11, style: .continuous).fill(theme.elev))
                         VStack(alignment: .leading, spacing: 1) {
                             Text(L.s("log_custom_title"))
-                                .font(theme.fonts.body(15, .semibold))
-                                .foregroundStyle(theme.text)
+                                .font(Fonts.text(15, .semibold))
+                                .foregroundStyle(theme.ink)
                             Text(L.s("log_custom_sub"))
-                                .font(theme.fonts.body(12.5))
-                                .foregroundStyle(theme.muted)
+                                .font(Fonts.text(12.5))
+                                .foregroundStyle(theme.sub)
                         }
                         Spacer()
                     }
                     .padding(14)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(theme.surface)
+                            .fill(theme.card)
                             .shadow(color: .black.opacity(0.04), radius: 7, y: 4)
                     )
                 }
@@ -224,25 +224,25 @@ struct LogSheet: View {
                     pick(name: item.name, abv: item.abv, ml: item.ml, cost: item.cost)
                 } label: {
                     VStack(alignment: .leading, spacing: 0) {
-                        GlassIcon(abv: item.abv, width: 26, height: 33, liquid: item.saved ? theme.b1 : theme.accent)
+                        GlassIcon(abv: item.abv, width: 26, height: 33, liquid: item.saved ? theme.moss : theme.acc)
                         Text(item.name)
-                            .font(theme.fonts.body(14, .semibold))
-                            .foregroundStyle(theme.text)
+                            .font(Fonts.text(14, .semibold))
+                            .foregroundStyle(theme.ink)
                             .lineLimit(1)
                             .padding(.top, 8)
                         Text(L.f("log_grid_meta", Formatters.trim(item.abv), Int(item.ml)))
-                            .font(theme.fonts.body(12))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(12))
+                            .foregroundStyle(theme.sub)
                             .padding(.top, 2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(12)
                     .background(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .fill(selected ? theme.surface2 : theme.surface)
+                            .fill(selected ? theme.elev : theme.card)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                    .strokeBorder(selected ? theme.accent : .clear, lineWidth: 1.5)
+                                    .strokeBorder(selected ? theme.acc : .clear, lineWidth: 1.5)
                             )
                     )
                 }
@@ -265,15 +265,15 @@ struct LogSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(L.s("log_tune_intro"))
-                    .font(theme.fonts.body(14.5))
-                    .foregroundStyle(theme.muted)
+                    .font(Fonts.text(14.5))
+                    .foregroundStyle(theme.sub)
                     .lineSpacing(2)
 
                 // ABV card
                 VStack(alignment: .leading, spacing: 0) {
                     Text(L.s("log_abv_label"))
-                        .font(theme.fonts.body(13, .semibold))
-                        .foregroundStyle(theme.muted)
+                        .font(Fonts.text(13, .semibold))
+                        .foregroundStyle(theme.sub)
                     StepperRow(
                         display: L.f("log_abv_value", abv),
                         decrement: { abv = max(0.5, ((abv - 0.5) * 10).rounded() / 10) },
@@ -295,8 +295,8 @@ struct LogSheet: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         Text(L.s("log_serving_label"))
-                            .font(theme.fonts.body(13, .semibold))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(13, .semibold))
+                            .foregroundStyle(theme.sub)
                         Spacer()
                         SegmentedPill(
                             options: [(true, ServingUnit.ml.shortLabel), (false, ServingUnit.oz.shortLabel)],
@@ -330,8 +330,8 @@ struct LogSheet: View {
                 // Quantity card — half measures are first-class.
                 VStack(alignment: .leading, spacing: 0) {
                     Text(L.s("log_quantity_label"))
-                        .font(theme.fonts.body(13, .semibold))
-                        .foregroundStyle(theme.muted)
+                        .font(Fonts.text(13, .semibold))
+                        .foregroundStyle(theme.sub)
                     HStack(spacing: 8) {
                         ForEach(quantityOptions, id: \.0) { value, label in
                             ValueChip(text: label, selected: quantity == value) { quantity = value }
@@ -352,12 +352,12 @@ struct LogSheet: View {
                         AlcoholMath.kcal(ml: ml * quantity, abv: abv),
                         UnitsConfig.current.noun(.plural)
                     ))
-                        .font(theme.fonts.body(14))
-                        .foregroundStyle(theme.muted)
+                        .font(Fonts.text(14))
+                        .foregroundStyle(theme.sub)
                     Text(AlcoholMath.workingLine(ml: ml, abv: abv, quantity: quantity))
-                        .font(theme.fonts.body(11.5))
+                        .font(Fonts.text(11.5))
                         .monospacedDigit()
-                        .foregroundStyle(theme.faint)
+                        .foregroundStyle(theme.sub)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 14)
@@ -379,20 +379,20 @@ struct LogSheet: View {
                     GlassIcon(abv: abv, width: 42, height: 54)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(pickedName ?? "")
-                            .font(theme.fonts.display(18))
+                            .font(Fonts.figure(18))
                         Text(reviewMeta)
-                            .font(theme.fonts.body(13.5))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(13.5))
+                            .foregroundStyle(theme.sub)
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 0) {
                         Text(Formatters.units1(AlcoholMath.units(ml: ml * quantity, abv: abv)))
-                            .font(theme.fonts.display(22))
+                            .font(Fonts.figure(22))
                             .monospacedDigit()
-                            .foregroundStyle(theme.accent)
+                            .foregroundStyle(theme.acc)
                         Text(UnitsConfig.current.noun(.short))
-                            .font(theme.fonts.body(11.5))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(11.5))
+                            .foregroundStyle(theme.sub)
                     }
                 }
                 .padding(18)
@@ -401,8 +401,8 @@ struct LogSheet: View {
                 // When — back-dating lives on the sheet, not a separate flow.
                 VStack(alignment: .leading, spacing: 0) {
                     Text(L.s("log_when_label"))
-                        .font(theme.fonts.body(13, .semibold))
-                        .foregroundStyle(theme.muted)
+                        .font(Fonts.text(13, .semibold))
+                        .foregroundStyle(theme.sub)
                     HStack(spacing: 8) {
                         ForEach(Array([L.s("log_when_now"), L.s("log_when_1h"), L.s("log_when_2h")].enumerated()), id: \.offset) { i, label in
                             ValueChip(text: label, selected: whenIndex == i) { whenIndex = i }
@@ -417,19 +417,19 @@ struct LogSheet: View {
                 if settings.askCost {
                     HStack {
                         Text(L.s("log_cost_label"))
-                            .font(theme.fonts.body(15, .semibold))
+                            .font(Fonts.text(15, .semibold))
                         Spacer()
                         HStack(spacing: 2) {
                             Text(L.f("log_cost_currency", CurrencyConfig.current.symbol))
-                                .font(theme.fonts.display(18))
-                                .foregroundStyle(theme.muted)
+                                .font(Fonts.figure(18))
+                                .foregroundStyle(theme.sub)
                             TextField(L.s("log_cost_placeholder"), text: $costText)
                                 .keyboardType(.decimalPad)
-                                .font(theme.fonts.display(17))
+                                .font(Fonts.figure(17))
                                 .monospacedDigit()
                                 .multilineTextAlignment(.center)
                                 .frame(width: 64, height: 38)
-                                .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(theme.surface2))
+                                .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(theme.elev))
                         }
                     }
                     .padding(16)
@@ -439,12 +439,12 @@ struct LogSheet: View {
 
                 if settings.showCalories {
                     HStack {
-                        Text(L.s("log_calories_label")).font(theme.fonts.body(15, .semibold))
+                        Text(L.s("log_calories_label")).font(Fonts.text(15, .semibold))
                         Spacer()
                         Text(calorieDisplay)
-                            .font(theme.fonts.body(15))
+                            .font(Fonts.text(15))
                             .monospacedDigit()
-                            .foregroundStyle(theme.muted)
+                            .foregroundStyle(theme.sub)
                     }
                     .padding(16)
                     .card(radius: 20)
@@ -454,8 +454,8 @@ struct LogSheet: View {
                 Text(model.dayOffset == 0
                     ? L.s("log_saved_to_today")
                     : L.f("log_saved_to_day", model.selectedDayTitle))
-                    .font(theme.fonts.body(12.5))
-                    .foregroundStyle(theme.faint)
+                    .font(Fonts.text(12.5))
+                    .foregroundStyle(theme.sub)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 14)
             }

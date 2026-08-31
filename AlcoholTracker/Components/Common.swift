@@ -16,14 +16,14 @@ struct PrimaryButton: View {
             action()
         } label: {
             Text(title)
-                .font(theme.fonts.body(height >= 54 ? 17 : 16.5, .semibold))
-                .foregroundStyle(theme.onAccent)
+                .font(Fonts.text(height >= 54 ? 17 : 16.5, .semibold))
+                .foregroundStyle(theme.onAcc)
                 .frame(maxWidth: .infinity)
                 .frame(height: height)
                 .background(
-                    RoundedRectangle(cornerRadius: theme.radii.rl, style: .continuous)
-                        .fill(theme.accent)
-                        .shadow(color: theme.accent.opacity(0.35), radius: 10, y: 8)
+                    RoundedRectangle(cornerRadius: Radii.banner, style: .continuous)
+                        .fill(theme.acc)
+                        .shadow(color: theme.acc.opacity(0.35), radius: 10, y: 8)
                 )
                 .opacity(enabled ? 1 : 0.45)
         }
@@ -43,11 +43,11 @@ struct SoftButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(theme.fonts.body(16, .semibold))
+                .font(Fonts.text(16, .semibold))
                 .foregroundStyle(foreground)
                 .frame(maxWidth: .infinity)
                 .frame(height: height)
-                .background(RoundedRectangle(cornerRadius: theme.radii.rs, style: .continuous).fill(background))
+                .background(RoundedRectangle(cornerRadius: Radii.tile, style: .continuous).fill(background))
         }
         .buttonStyle(PressScale(scale: 0.965))
     }
@@ -66,11 +66,11 @@ struct CircleIconButton: View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: size * 0.34, weight: .semibold))
-                .foregroundStyle(theme.muted)
+                .foregroundStyle(theme.sub)
                 .frame(width: size, height: size)
                 .background(
                     Circle()
-                        .fill(onCard2 ? theme.surface2 : theme.surface)
+                        .fill(onCard2 ? theme.elev : theme.card)
                         .shadow(color: .black.opacity(onCard2 ? 0 : 0.05), radius: 4, y: 2)
                 )
                 .opacity(dimmed ? 0.3 : 1)
@@ -95,15 +95,15 @@ struct SegmentedPill<T: Hashable>: View {
                     withAnimation(Motion.fade) { selection = value }
                 } label: {
                     Text(label)
-                        .font(theme.fonts.body(fontSize, .semibold))
-                        .foregroundStyle(selection == value ? theme.text : theme.muted)
+                        .font(Fonts.text(fontSize, .semibold))
+                        .foregroundStyle(selection == value ? theme.ink : theme.sub)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 9)
                         .background(
                             Group {
                                 if selection == value {
                                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                        .fill(theme.surface)
+                                        .fill(theme.card)
                                         .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
                                 }
                             }
@@ -113,7 +113,7 @@ struct SegmentedPill<T: Hashable>: View {
             }
         }
         .padding(2)
-        .background(RoundedRectangle(cornerRadius: theme.radii.rs, style: .continuous).fill(theme.surface2))
+        .background(RoundedRectangle(cornerRadius: Radii.tile, style: .continuous).fill(theme.elev))
     }
 }
 
@@ -130,7 +130,7 @@ struct StepperRow: View {
             stepButton("minus", decrement)
             Spacer()
             Text(display)
-                .font(theme.fonts.display(30))
+                .font(Fonts.figure(30))
                 .monospacedDigit()
                 .contentTransition(.numericText())
             Spacer()
@@ -145,9 +145,9 @@ struct StepperRow: View {
         } label: {
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(theme.muted)
+                .foregroundStyle(theme.sub)
                 .frame(width: 44, height: 44)
-                .background(Circle().fill(theme.surface2))
+                .background(Circle().fill(theme.elev))
         }
         .buttonStyle(PressScale(scale: 0.86))
     }
@@ -167,13 +167,13 @@ struct ValueChip: View {
             action()
         } label: {
             Text(text)
-                .font(theme.fonts.body(13.5, .semibold))
-                .foregroundStyle(selected ? theme.onAccent : theme.muted)
+                .font(Fonts.text(13.5, .semibold))
+                .foregroundStyle(selected ? theme.onAcc : theme.sub)
                 .frame(maxWidth: .infinity)
                 .frame(height: 36)
                 .background(
-                    RoundedRectangle(cornerRadius: theme.radii.rs, style: .continuous)
-                        .fill(selected ? theme.accent : theme.surface2)
+                    RoundedRectangle(cornerRadius: Radii.tile, style: .continuous)
+                        .fill(selected ? theme.acc : theme.elev)
                 )
         }
         .buttonStyle(PressScale(scale: 0.92))
@@ -198,10 +198,10 @@ struct AppToggle: View {
         } label: {
             ZStack(alignment: isOn ? .trailing : .leading) {
                 Capsule()
-                    .fill(isOn ? theme.accent : theme.surface2)
+                    .fill(isOn ? theme.acc : theme.elev)
                     .frame(width: 50, height: 30)
                 Circle()
-                    .fill(isOn ? theme.onAccent : theme.surface)
+                    .fill(isOn ? theme.onAcc : theme.card)
                     .shadow(color: .black.opacity(0.2), radius: 3, y: 2)
                     .frame(width: 26, height: 26)
                     .padding(2)
@@ -227,7 +227,7 @@ struct ProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(theme.surface2, lineWidth: lineWidth)
+                .stroke(theme.elev, lineWidth: lineWidth)
             Circle()
                 .trim(from: 0, to: min(1, max(0, progress)))
                 .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
@@ -249,7 +249,7 @@ struct ThinBar: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
-                Capsule().fill(theme.surface2)
+                Capsule().fill(theme.elev)
                 Capsule()
                     .fill(color)
                     .frame(width: max(0, geo.size.width * min(1, fraction)))
@@ -284,12 +284,12 @@ struct ProBadge: View {
 
     var body: some View {
         Text(L.s("badge_pro"))
-            .font(theme.fonts.body(10.5, .bold))
+            .font(Fonts.text(10.5, .bold))
             .kerning(0.5)
-            .foregroundStyle(theme.accent)
+            .foregroundStyle(theme.acc)
             .padding(.horizontal, 9)
             .padding(.vertical, 4)
-            .background(RoundedRectangle(cornerRadius: theme.radii.rs, style: .continuous).fill(theme.surface2))
+            .background(RoundedRectangle(cornerRadius: Radii.tile, style: .continuous).fill(theme.elev))
             .onTapGesture { action?() }
     }
 }
@@ -323,12 +323,12 @@ struct SettingsRow<Trailing: View>: View {
                     )
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title)
-                        .font(theme.fonts.body(15.5))
-                        .foregroundStyle(theme.text)
+                        .font(Fonts.text(15.5))
+                        .foregroundStyle(theme.ink)
                     if let subtitle {
                         Text(subtitle)
-                            .font(theme.fonts.body(12.5))
-                            .foregroundStyle(theme.muted)
+                            .font(Fonts.text(12.5))
+                            .foregroundStyle(theme.sub)
                     }
                 }
                 Spacer(minLength: 8)
@@ -354,9 +354,9 @@ struct SettingsGroup<Content: View>: View {
 
     var body: some View {
         VStack(spacing: 0) { content }
-            .clipShape(RoundedRectangle(cornerRadius: theme.radii.r, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Radii.card, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: theme.radii.r, style: .continuous)
+                RoundedRectangle(cornerRadius: Radii.card, style: .continuous)
                     .strokeBorder(theme.line, lineWidth: 1)
             )
             .card(radius: 20)

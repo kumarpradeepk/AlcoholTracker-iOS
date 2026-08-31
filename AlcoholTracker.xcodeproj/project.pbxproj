@@ -290,22 +290,10 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Alcohol Tracker never reads Health data.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Logged drinks can be written to Apple Health as alcohol-consumption entries. Nothing is ever read.";
 				INFOPLIST_KEY_UIAppFonts = (
-					"IBMPlexSans-Medium.ttf",
-					"IBMPlexSans-Regular.ttf",
-					"IBMPlexSans-SemiBold.ttf",
-					"InstrumentSerif-Italic.ttf",
-					"InstrumentSerif-Regular.ttf",
-					"Outfit-Bold.ttf",
-					"Outfit-Medium.ttf",
-					"Outfit-Regular.ttf",
-					"Outfit-SemiBold.ttf",
-					"PublicSans-Bold.ttf",
-					"PublicSans-Medium.ttf",
-					"PublicSans-Regular.ttf",
-					"PublicSans-SemiBold.ttf",
-					"SpaceGrotesk-Bold.ttf",
-					"SpaceGrotesk-Medium.ttf",
-					"SpaceGrotesk-Regular.ttf",
+					"GeneralSans-Regular.otf",
+					"GeneralSans-Medium.otf",
+					"GeneralSans-Semibold.otf",
+					"GeneralSans-Bold.otf",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -342,22 +330,10 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Alcohol Tracker never reads Health data.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Logged drinks can be written to Apple Health as alcohol-consumption entries. Nothing is ever read.";
 				INFOPLIST_KEY_UIAppFonts = (
-					"IBMPlexSans-Medium.ttf",
-					"IBMPlexSans-Regular.ttf",
-					"IBMPlexSans-SemiBold.ttf",
-					"InstrumentSerif-Italic.ttf",
-					"InstrumentSerif-Regular.ttf",
-					"Outfit-Bold.ttf",
-					"Outfit-Medium.ttf",
-					"Outfit-Regular.ttf",
-					"Outfit-SemiBold.ttf",
-					"PublicSans-Bold.ttf",
-					"PublicSans-Medium.ttf",
-					"PublicSans-Regular.ttf",
-					"PublicSans-SemiBold.ttf",
-					"SpaceGrotesk-Bold.ttf",
-					"SpaceGrotesk-Medium.ttf",
-					"SpaceGrotesk-Regular.ttf",
+					"GeneralSans-Regular.otf",
+					"GeneralSans-Medium.otf",
+					"GeneralSans-Semibold.otf",
+					"GeneralSans-Bold.otf",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

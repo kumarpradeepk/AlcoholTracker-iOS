@@ -31,7 +31,7 @@ struct BarChart: View {
                             topLeadingRadius: 3, bottomLeadingRadius: 2,
                             bottomTrailingRadius: 2, topTrailingRadius: 3
                         )
-                        .fill(useOverColor && b.overDaily ? theme.b2 : theme.accent)
+                        .fill(useOverColor && b.overDaily ? theme.amber : theme.acc)
                         .frame(height: grown ? height * fraction : 2)
                         .frame(maxWidth: .infinity)
                         .animation(
@@ -44,7 +44,7 @@ struct BarChart: View {
 
                 if let averageFraction {
                     Line()
-                        .stroke(theme.faint, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                        .stroke(theme.sub, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
                         .frame(height: 1.5)
                         .offset(y: -height * min(0.96, averageFraction))
                         .transition(.opacity)
@@ -55,8 +55,8 @@ struct BarChart: View {
                 HStack(spacing: 3) {
                     ForEach(buckets) { b in
                         Text(b.label)
-                            .font(theme.fonts.body(9))
-                            .foregroundStyle(theme.faint)
+                            .font(Fonts.text(9))
+                            .foregroundStyle(theme.sub)
                             .lineLimit(1)
                             .frame(maxWidth: .infinity)
                     }
@@ -104,14 +104,14 @@ struct TrendLineChart: View {
                     p.addLine(to: CGPoint(x: last.x, y: height))
                     p.closeSubpath()
                 }
-                .fill(theme.accent.opacity(0.18))
+                .fill(theme.acc.opacity(0.18))
 
                 Path { p in
                     guard let first = points.first else { return }
                     p.move(to: first)
                     for pt in points.dropFirst() { p.addLine(to: pt) }
                 }
-                .stroke(theme.accent, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                .stroke(theme.acc, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
             }
         }
         .frame(height: height)
@@ -129,11 +129,11 @@ struct SkeletonCard: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 22, style: .continuous)
-            .fill(theme.surface2)
+            .fill(theme.elev)
             .overlay(
                 GeometryReader { geo in
                     LinearGradient(
-                        colors: [.clear, theme.surface.opacity(0.9), .clear],
+                        colors: [.clear, theme.card.opacity(0.9), .clear],
                         startPoint: .leading, endPoint: .trailing
                     )
                     .frame(width: geo.size.width * 0.6)

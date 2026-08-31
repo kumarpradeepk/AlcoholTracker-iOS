@@ -11,7 +11,7 @@ struct RootView: View {
     @Environment(\.colorScheme) private var systemScheme
     @Environment(\.scenePhase) private var scenePhase
 
-    /// Two independent axes: which theme, and which scheme it is shown in.
+    /// Two independent axes: which family, and which scheme it is shown in.
     private var theme: Theme {
         let dark: Bool
         switch settings.appearance {
@@ -19,12 +19,12 @@ struct RootView: View {
         case .light: dark = false
         case .system: dark = systemScheme == .dark
         }
-        return Theme.resolve(settings.theme, dark: dark)
+        return Theme.of(settings.theme, dark: dark)
     }
 
     var body: some View {
         ZStack {
-            theme.bg.ignoresSafeArea()
+            theme.page.ignoresSafeArea()
 
             switch model.phase {
             case .welcome: WelcomeView(model: model)
@@ -56,23 +56,23 @@ struct RootView: View {
             }
         }
         .environment(\.theme, theme)
-        .tint(theme.accent)
-        .foregroundStyle(theme.text)
+        .tint(theme.acc)
+        .foregroundStyle(theme.ink)
         .preferredColorScheme(settings.colorScheme)
         .animation(Motion.fade, value: model.phase)
         .fullScreenCover(isPresented: $model.paywallShown) {
             PaywallView(model: model, entitlements: entitlements)
                 .overlay(ToastHost(model: model)) // root host is hidden behind the cover
                 .environment(\.theme, theme)
-                .tint(theme.accent)
-                .foregroundStyle(theme.text)
+                .tint(theme.acc)
+                .foregroundStyle(theme.ink)
         }
         .sheet(item: $model.sheet) { sheet in
             sheetContent(sheet)
                 .overlay(ToastHost(model: model)) // root host is hidden behind the sheet
                 .environment(\.theme, theme)
-                .tint(theme.accent)
-                .foregroundStyle(theme.text)
+                .tint(theme.acc)
+                .foregroundStyle(theme.ink)
         }
         .task {
             // Boot splash: hold ~1s, then fade (matches the canvas timing).
@@ -183,13 +183,13 @@ struct BootOverlay: View {
         VStack(spacing: 18) {
             DropletMark(size: 46)
             Text(L.s("app_name"))
-                .font(theme.fonts.body(15, .semibold))
+                .font(Fonts.text(15, .semibold))
                 .kerning(0.4)
-                .foregroundStyle(theme.muted)
+                .foregroundStyle(theme.sub)
                 .opacity(labelShown ? 1 : 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(theme.bg.ignoresSafeArea())
+        .background(theme.page.ignoresSafeArea())
         .onAppear {
             withAnimation(.easeIn(duration: 0.8).delay(0.3)) { labelShown = true }
         }
@@ -206,20 +206,20 @@ struct LockOverlay: View {
         VStack(spacing: 20) {
             DropletMark(size: 46)
             Text(L.s("lock_title"))
-                .font(theme.fonts.display(17))
+                .font(Fonts.figure(17))
             Button {
                 Task { await appLock.unlock() }
             } label: {
                 Text(L.s("lock_unlock_cta"))
-                    .font(theme.fonts.body(15.5, .semibold))
-                    .foregroundStyle(theme.accent)
+                    .font(Fonts.text(15.5, .semibold))
+                    .foregroundStyle(theme.acc)
                     .padding(.horizontal, 22)
                     .frame(height: 44)
-                    .background(Capsule().fill(theme.surface2))
+                    .background(Capsule().fill(theme.elev))
             }
             .buttonStyle(PressScale(scale: 0.95))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(theme.bg.ignoresSafeArea())
+        .background(theme.page.ignoresSafeArea())
     }
 }

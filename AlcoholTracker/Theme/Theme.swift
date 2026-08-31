@@ -2,257 +2,205 @@ import SwiftUI
 
 // MARK: - Design tokens
 //
-// The token set, verbatim from the Claude Design canvas `Coaster Prototype.dc.html`.
+// The token set, verbatim from the Claude Design canvas (`Alcohol Tracker
+// Phone.html`, the `.at` / `.at.dk` / `.at.mnl` / `.at.dk.mnd` blocks).
 //
-// The canvas ships **three** themes, each with an independently designed light
-// and dark palette — dark is never an inversion. The names here are the
-// canvas's own (`bg`, `surface`, `accent`, `b1`…`b4`) so a future canvas
-// revision diffs against this file without a translation step.
+// Two families, each designed in light and dark: Warm, and a Mono pair that has
+// no hue to judge with and carries state in texture instead. The concrete
+// palettes are generated into `Palettes.swift`; this file is the shape they
+// fill and the behaviour that hangs off them.
 
-/// The three themes from the canvas's `THEMES` table.
+/// Surface texture.
 ///
-/// The raw value is the persisted identity and never changes; the display name
-/// and description are read from the string catalog so they follow the locale.
-enum AppTheme: String, CaseIterable, Codable {
-    case kiln
-    case nocturne
-    case coaster
+/// The mono themes cannot use hue to separate states, so they reach for a dot
+/// grid and diagonal hatching instead; the warm themes set `.none` and the
+/// drawing is skipped entirely.
+enum Pattern: Equatable {
+    case none
+    /// `radial-gradient(<c> 1px, transparent 1px)` — a 1px dot on a grid.
+    case dots(Color, spacing: CGFloat = 10)
+    /// `repeating-linear-gradient(135deg, …)` — fine diagonal hatching.
+    case diagonal(Color, period: CGFloat = 10, thickness: CGFloat = 2)
+}
 
-    /// Brand nouns — deliberately not translated, like `Apple Health`.
+/// A chart bar's fill. Striped is how the mono themes say "over goal" without
+/// a red to say it in.
+enum BarFill: Equatable {
+    case flat(Color)
+    case striped(Color, Color)
+}
+
+struct Theme: Equatable {
+    /// The page the app is drawn on.
+    let page: Color
+    /// Behind the page — the frame ground.
+    let outer: Color
+    /// A raised card. In this design a card is a fill, not a border.
+    let card: Color
+    /// A sunken well inside a card: icon tiles, inset rows.
+    let elev: Color
+    /// Primary text.
+    let ink: Color
+    /// Secondary text. The canvas has exactly two ink levels — do not add a third.
+    let sub: Color
+    /// Hairline dividers.
+    let line: Color
+
+    /// The accent. Fills the intake hero and every primary action.
+    let acc: Color
+    /// Text and icons on top of `acc`.
+    let accInk: Color
+    /// Positive: dry days, under-goal bars.
+    let moss: Color
+    /// Text on top of `moss`.
+    let mossInk: Color
+    /// Caution: approaching the daily goal.
+    let amber: Color
+    /// Over goal, and every destructive action.
+    let danger: Color
+    /// Text on top of `danger`.
+    let dangerInk: Color
+    /// A switch's track when it is on — its own token, not always `acc`.
+    let togOn: Color
+
+    /// The intake ring in its caution band.
+    let ringWarn: Color
+    /// The intake ring once over goal.
+    let ringOver: Color
+    /// The ring's second over-goal lap, past 200%.
+    let ringOver2: Color
+
+    /// Dimmer behind sheets and dialogs.
+    let scrim: Color
+
+    /// Texture behind the page.
+    let patPage: Pattern
+    /// Texture inside the intake hero.
+    let patHero: Pattern
+    /// Texture on a moss surface.
+    let patMoss: Pattern
+    /// Fill for an over-goal bar.
+    let barOver: BarFill
+    /// Fill for a caution bar.
+    let barWarnBg: BarFill
+    /// Opacity of the decorative glass silhouettes; zero in the warm themes.
+    let silhouette: Double
+
+    let isDark: Bool
+
+    /// Kept so call sites written against the previous direction still read.
+    var onAcc: Color { accInk }
+
+    /// The goal-progress ramp. Colour may judge; copy may not.
+    ///
+    /// The mono themes have no hue to judge with, so their moss/amber/danger
+    /// collapse towards greys and the *pattern* carries the meaning instead.
+    func forRatio(_ ratio: Double) -> Color {
+        if ratio <= 0.75 { return moss }
+        if ratio <= 1.0 { return amber }
+        return danger
+    }
+
+    /// The canvas's `color-mix(in oklab, <c> <pct>%, var(--card))`.
+    ///
+    /// Mixed in linear space: a plain sRGB blend of a saturated accent into a
+    /// warm card goes muddy, and this stays far closer to what the canvas draws.
+    func mix(_ color: Color, _ percent: Double) -> Color {
+        let t = min(max(percent, 0), 1)
+        func lin(_ c: Double) -> Double { c <= 0.04045 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) }
+        func srgb(_ c: Double) -> Double { c <= 0.0031308 ? c * 12.92 : 1.055 * pow(c, 1 / 2.4) - 0.055 }
+        let a = UIColor(color).rgb, b = UIColor(card).rgb
+        return Color(
+            red: srgb(lin(a.r) * t + lin(b.r) * (1 - t)),
+            green: srgb(lin(a.g) * t + lin(b.g) * (1 - t)),
+            blue: srgb(lin(a.b) * t + lin(b.b) * (1 - t))
+        )
+    }
+
+    /// Back-compat aliases for the default look.
+    static var light: Theme { .warmLight }
+    static var dark: Theme { .warmDark }
+
+    static func resolve(dark: Bool) -> Theme { dark ? .warmDark : .warmLight }
+}
+
+/// The two theme families. Each is designed in light and dark independently,
+/// so this is orthogonal to the scheme choice.
+enum AppTheme: String, CaseIterable, Codable {
+    case warm
+    case mono
+
+    /// Shown in the picker; the descriptions live in the string catalog.
     var displayName: String {
         switch self {
-        case .kiln: "Kiln"
-        case .nocturne: "Nocturne"
-        case .coaster: "Coaster"
+        case .warm: L.s("theme_warm")
+        case .mono: L.s("theme_mono")
         }
     }
 
     var blurb: String {
         switch self {
-        case .kiln: L.s("theme_kiln_desc")
-        case .nocturne: L.s("theme_nocturne_desc")
-        case .coaster: L.s("theme_coaster_desc")
+        case .warm: L.s("theme_warm_desc")
+        case .mono: L.s("theme_mono_desc")
         }
     }
 
-    static func from(_ raw: String?) -> AppTheme {
-        AppTheme(rawValue: raw ?? "") ?? .kiln
-    }
+    static func from(_ raw: String?) -> AppTheme { AppTheme(rawValue: raw ?? "") ?? .warm }
 }
 
-/// Corner radii. Each theme sets its own — Kiln is tight and papery at 12,
-/// Nocturne soft at 18 — so radius is a theme token, not a constant.
-struct Radii: Equatable {
-    /// Cards and grouped rows.
-    let r: CGFloat
-    /// Chips, small controls, inset wells.
-    let rs: CGFloat
-    /// Primary buttons.
-    let rl: CGFloat
+/// Corner radii, read off the canvas. This design is much rounder than the
+/// last one and the steps carry meaning, so they are named for what they wrap.
+enum Radii {
+    /// Icon buttons and small tiles — 15pt in the canvas.
+    static let tile: CGFloat = 15
+    /// Chips and pills that are not fully round.
+    static let chip: CGFloat = 18
+    /// Banners and secondary cards.
+    static let banner: CGFloat = 20
+    /// Standard content card.
+    static let card: CGFloat = 24
+    /// The intake hero and bottom sheets.
+    static let hero: CGFloat = 30
 }
 
-struct Theme: Equatable {
-    /// Page ground.
-    let bg: Color
-    /// Raised surface: cards, rows, the tab bar.
-    let surface: Color
-    /// Sunken surface: chips, wells, inset groups.
-    let surface2: Color
-    /// Hairline borders. In this system a card is a border, not a shadow.
-    let line: Color
-    /// Primary text.
-    let text: Color
-    /// Secondary text.
-    let muted: Color
-    /// Tertiary text, captions, disabled.
-    let faint: Color
-    /// The one accent: primary actions, links, selection.
-    let accent: Color
-    /// Text/icon that sits on top of `accent`.
-    let onAccent: Color
-    /// The earned/premium accent — gold. Owns Pro and the banked-day mark.
-    let accent2: Color
-    /// Text/icon on top of `accent2`.
-    let onAccent2: Color
-    /// Band 1 — at or under 75% of the daily goal. Also "dry day".
-    let b1: Color
-    /// Band 2 — 75–100%.
-    let b2: Color
-    /// Band 3 — 100–150%. Also the destructive colour.
-    let b3: Color
-    /// Band 4 — over 150%.
-    let b4: Color
-    let isDark: Bool
-    let radii: Radii
-    let fonts: ThemeFonts
-
-    /// The brief's FIXED band scale (§5.2). Colour may judge; copy may not.
-    /// Thresholds are the canvas's `band(ratio)` exactly.
-    func band(_ ratio: Double) -> Color {
-        if ratio <= 0.75 { return b1 }
-        if ratio <= 1.0 { return b2 }
-        if ratio <= 1.5 { return b3 }
-        return b4
-    }
-
-    static func resolve(_ theme: AppTheme, dark: Bool) -> Theme {
-        switch theme {
-        case .kiln: dark ? .kilnDark : .kilnLight
-        case .nocturne: dark ? .nocturneDark : .nocturneLight
-        case .coaster: dark ? .coasterDark : .coasterLight
-        }
-    }
-
-    /// Back-compat aliases so a `Theme.light` reference still resolves to the
-    /// default look while the app is being migrated screen by screen.
-    static let light = Theme.kilnLight
-    static let dark = Theme.kilnDark
-}
-
-// MARK: - Kiln — warm stone and struck brass
-
-extension Theme {
-    static let kilnLight = Theme(
-        bg: Color(hex: 0xF6F3EE), surface: Color(hex: 0xFFFFFF),
-        surface2: Color(hex: 0xF0E6DE), line: Color(hex: 0xE7E1D7),
-        text: Color(hex: 0x1C1A17), muted: Color(hex: 0x6E675D), faint: Color(hex: 0x9A9287),
-        accent: Color(hex: 0xB4623A), onAccent: Color(hex: 0xFFFFFF),
-        accent2: Color(hex: 0xC9962F), onAccent2: Color(hex: 0xF6F3EE),
-        b1: Color(hex: 0x5E7A5B), b2: Color(hex: 0xB08A3C),
-        b3: Color(hex: 0x8C4A63), b4: Color(hex: 0x5A2440),
-        isDark: false,
-        radii: Radii(r: 12, rs: 9, rl: 14),
-        fonts: .kiln
-    )
-
-    static let kilnDark = Theme(
-        bg: Color(hex: 0x16130F), surface: Color(hex: 0x201C17),
-        surface2: Color(hex: 0x2A241C), line: Color(hex: 0x332C22),
-        text: Color(hex: 0xF2ECE1), muted: Color(hex: 0xA0968A), faint: Color(hex: 0x8C8272),
-        accent: Color(hex: 0xC4703F), onAccent: Color(hex: 0x16130F),
-        accent2: Color(hex: 0xD9AC48), onAccent2: Color(hex: 0x16130F),
-        b1: Color(hex: 0x7E9B79), b2: Color(hex: 0xD2A24A),
-        b3: Color(hex: 0xC07694), b4: Color(hex: 0x9A5678),
-        isDark: true,
-        radii: Radii(r: 12, rs: 9, rl: 14),
-        fonts: .kiln
-    )
-}
-
-// MARK: - Nocturne — graphite, ivory for banked days
-
-extension Theme {
-    static let nocturneLight = Theme(
-        bg: Color(hex: 0xF4F4F2), surface: Color(hex: 0xFFFFFF),
-        surface2: Color(hex: 0xF0F0ED), line: Color(hex: 0xE3E3DF),
-        text: Color(hex: 0x14161A), muted: Color(hex: 0x6E747C), faint: Color(hex: 0x8B9096),
-        accent: Color(hex: 0x14161A), onAccent: Color(hex: 0xFFFFFF),
-        accent2: Color(hex: 0x8A6B2F), onAccent2: Color(hex: 0xF4F4F2),
-        b1: Color(hex: 0x4F7A56), b2: Color(hex: 0xA6791F),
-        b3: Color(hex: 0xC25A2E), b4: Color(hex: 0xA33227),
-        isDark: false,
-        radii: Radii(r: 18, rs: 12, rl: 16),
-        fonts: .nocturne
-    )
-
-    static let nocturneDark = Theme(
-        bg: Color(hex: 0x101114), surface: Color(hex: 0x191B1F),
-        surface2: Color(hex: 0x23262B), line: Color(hex: 0x2B2F35),
-        text: Color(hex: 0xF1EFEA), muted: Color(hex: 0x969CA4), faint: Color(hex: 0x6E747C),
-        accent: Color(hex: 0xEDE4D3), onAccent: Color(hex: 0x101114),
-        accent2: Color(hex: 0xE3B341), onAccent2: Color(hex: 0x101114),
-        b1: Color(hex: 0x8FB07A), b2: Color(hex: 0xE3B341),
-        b3: Color(hex: 0xE07A4B), b4: Color(hex: 0xB8443A),
-        isDark: true,
-        radii: Radii(r: 18, rs: 12, rl: 16),
-        fonts: .nocturne
-    )
-}
-
-// MARK: - Coaster — kraft paper, ink and honey
-
-extension Theme {
-    static let coasterLight = Theme(
-        bg: Color(hex: 0xEFE9DE), surface: Color(hex: 0xFBF7F0),
-        surface2: Color(hex: 0xEFE4D2), line: Color(hex: 0xDED5C6),
-        text: Color(hex: 0x17140F), muted: Color(hex: 0x6F6759), faint: Color(hex: 0x9C927F),
-        accent: Color(hex: 0xC4872F), onAccent: Color(hex: 0xFFFFFF),
-        accent2: Color(hex: 0xC4872F), onAccent2: Color(hex: 0xEFE9DE),
-        b1: Color(hex: 0x5E7A5B), b2: Color(hex: 0xC4872F),
-        b3: Color(hex: 0xA9713C), b4: Color(hex: 0x17140F),
-        isDark: false,
-        radii: Radii(r: 16, rs: 12, rl: 16),
-        fonts: .coaster
-    )
-
-    static let coasterDark = Theme(
-        bg: Color(hex: 0x14120F), surface: Color(hex: 0x1D1A16),
-        surface2: Color(hex: 0x262119), line: Color(hex: 0x332C22),
-        text: Color(hex: 0xF5F0E7), muted: Color(hex: 0xA0968A), faint: Color(hex: 0x8A8172),
-        accent: Color(hex: 0xC4872F), onAccent: Color(hex: 0x14120F),
-        accent2: Color(hex: 0xD9A441), onAccent2: Color(hex: 0x14120F),
-        b1: Color(hex: 0x7E9B79), b2: Color(hex: 0xD9A441),
-        b3: Color(hex: 0xC08B54), b4: Color(hex: 0xE7DFCE),
-        isDark: true,
-        radii: Radii(r: 16, rs: 12, rl: 16),
-        fonts: .coaster
-    )
-}
-
-// MARK: - Typefaces
+// MARK: - Typeface
 //
-// Each theme pairs a display face with a body face. Where a family has no cut
-// at a requested weight the nearest available one is mapped here rather than
-// left to the system's synthetic bolding, which smears these designs badly.
+// General Sans (Fontshare, FFL) — the design's only typeface, replacing the
+// five families the previous direction carried. The canvas asks for weight 800
+// in places; 700 is the heaviest cut published, so those map to Bold rather
+// than being synthesised.
 
-struct ThemeFonts: Equatable {
-    let displayFamily: String
-    let bodyFamily: String
-    /// Instrument Serif is drawn at its one optical weight; Space Grotesk and
-    /// Outfit are set heavier so their counters hold at small sizes.
-    let displayWeight: Font.Weight
-
-    static let kiln = ThemeFonts(
-        displayFamily: "InstrumentSerif", bodyFamily: "PublicSans", displayWeight: .regular)
-    static let nocturne = ThemeFonts(
-        displayFamily: "SpaceGrotesk", bodyFamily: "IBMPlexSans", displayWeight: .semibold)
-    static let coaster = ThemeFonts(
-        displayFamily: "Outfit", bodyFamily: "PublicSans", displayWeight: .semibold)
-
-    /// PostScript-name suffix for a weight, per family. Space Grotesk ships no
-    /// SemiBold and IBM Plex Sans no Bold, so both fall to their nearest cut.
-    private func cut(_ family: String, _ weight: Font.Weight) -> String {
+enum Fonts {
+    static func face(_ weight: Font.Weight) -> String {
         switch weight {
-        case .bold, .heavy, .black:
-            return family == "IBMPlexSans" ? "SemiBold" : "Bold"
-        case .semibold:
-            return family == "SpaceGrotesk" ? "Bold" : "SemiBold"
-        case .medium:
-            return "Medium"
-        default:
-            return "Regular"
+        case .bold, .heavy, .black: "GeneralSans-Bold"
+        case .semibold: "GeneralSans-Semibold"
+        case .medium: "GeneralSans-Medium"
+        default: "GeneralSans-Regular"
         }
     }
 
-    func body(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
-        // Instrument Serif is never a body face, so bodyFamily always has cuts.
-        .custom("\(bodyFamily)-\(cut(bodyFamily, weight))", size: size)
+    /// Any text in the app. One family, so this is the only entry point.
+    static func text(_ size: CGFloat, _ weight: Font.Weight = .medium) -> Font {
+        .custom(face(weight), size: size)
     }
 
-    func display(_ size: CGFloat, _ weight: Font.Weight? = nil) -> Font {
-        let w = weight ?? displayWeight
-        // Instrument Serif has a single cut; asking for another yields nothing.
-        let name = displayFamily == "InstrumentSerif"
-            ? "InstrumentSerif-Regular"
-            : "\(displayFamily)-\(cut(displayFamily, w))"
-        return .custom(name, size: size)
+    /// A headline figure: the intake number, a BAC reading, a stat value.
+    /// The canvas tracks these tight — `-.02em` at 30pt through `-.04em` at 62pt.
+    static func figure(_ size: CGFloat, _ weight: Font.Weight = .bold) -> Font {
+        .custom(face(weight), size: size)
+    }
+
+    /// Tracking to pair with `figure(_:)` at a given size.
+    static func figureTracking(_ size: CGFloat) -> CGFloat {
+        size >= 48 ? -size * 0.04 : -size * 0.025
     }
 }
 
 // MARK: - Environment
 
 private struct ThemeKey: EnvironmentKey {
-    static let defaultValue: Theme = .kilnLight
+    static let defaultValue: Theme = .light
 }
 
 extension EnvironmentValues {
@@ -272,25 +220,51 @@ extension Color {
     }
 }
 
+private extension UIColor {
+    var rgb: (r: Double, g: Double, b: Double) {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        return (Double(r), Double(g), Double(b))
+    }
+}
+
 // MARK: - Motion
 //
-// The canvas leans on one springy curve — cubic-bezier(.34,1.56,.64,1) — for
-// press feedback and menu items, and cubic-bezier(.22,1,.36,1) for slides,
-// sheets and the ring. Every call site funnels through Motion so Reduce Motion
-// can flatten the whole app at once.
+// One-for-one with the canvas's `@keyframes` block and its `transition:`
+// declarations. Durations and curves are the design's own numbers rather than
+// system defaults; the whole feel of this direction is carried by them.
 
 enum Motion {
-    /// Playful overshoot for presses, pops and the FAB menu.
+    /// `cubic-bezier(.32,.72,.33,1)` — sheets, panels, slide-ins.
+    static let settle = Animation.timingCurve(0.32, 0.72, 0.33, 1, duration: 0.5)
+    /// `cubic-bezier(.3,.7,.3,1)` — the ring sweep and width growth.
+    static let sweep = Animation.timingCurve(0.3, 0.7, 0.3, 1, duration: 0.7)
+    /// `cubic-bezier(.3,.7,.3,1.2)` — a mild overshoot, e.g. the segmented thumb.
+    static let overshoot = Animation.timingCurve(0.3, 0.7, 0.3, 1.2, duration: 0.25)
+    /// `cubic-bezier(.3,.7,.3,1.3)` — the toast's livelier arrival.
+    static let toast = Animation.timingCurve(0.3, 0.7, 0.3, 1.3, duration: 0.35)
+    /// `cubic-bezier(.3,.7,.3,1.5)` — the strongest pop in the design.
+    static let popCurve = Animation.timingCurve(0.3, 0.7, 0.3, 1.5, duration: 0.55)
+    /// `cubic-bezier(.2,.75,.2,1)` — the odometer digit rise.
+    static let riseIn = Animation.timingCurve(0.2, 0.75, 0.2, 1, duration: 0.55)
+
+    /// `animation:fadeUp .4s` — the universal entrance.
+    static let fadeUp = Animation.timingCurve(0.32, 0.72, 0.33, 1, duration: 0.4)
+    static let fade = Animation.easeInOut(duration: 0.32)
     static let pop = Animation.spring(response: 0.34, dampingFraction: 0.62)
-    /// Decisive ease-out for sheets, panels and screen changes.
-    static let slide = Animation.timingCurve(0.22, 1, 0.36, 1, duration: 0.42)
-    static let rise = Animation.timingCurve(0.22, 1, 0.36, 1, duration: 0.28)
-    static let fade = Animation.easeInOut(duration: 0.3)
-    /// Ring and bar growth — the canvas animates stroke-dasharray over 550ms.
-    static let bars = Animation.timingCurve(0.22, 1, 0.36, 1, duration: 0.55)
+    static let bars = Animation.timingCurve(0.3, 0.7, 0.3, 1, duration: 0.5)
     static let count = Animation.easeOut(duration: 0.85)
 
-    static func riseDelayed(_ delay: Double) -> Animation { rise.delay(delay) }
+    /// The global `transition:background-color .3s,color .3s,…` cross-fade.
+    static let theme = Animation.easeInOut(duration: 0.3)
+
+    /// `transition:transform .15s` — the press response on every control.
+    static let press = Animation.easeOut(duration: 0.15)
+
+    /// Entry stagger between siblings; the canvas steps in 20 ms.
+    static let stagger: Double = 0.02
+
+    static func fadeUpDelayed(_ delay: Double) -> Animation { fadeUp.delay(delay) }
 
     static func reduced(_ reduce: Bool, _ animation: Animation) -> Animation? {
         reduce ? .easeOut(duration: 0.12) : animation
@@ -299,43 +273,49 @@ enum Motion {
 
 // MARK: - Reusable styles
 
-/// Press-down scale used on virtually every tappable surface in the canvas.
+/// Press-down scale used on virtually every tappable surface in the canvas
+/// (`style-active="transform:scale(.92…98)"`).
 struct PressScale: ButtonStyle {
     var scale: CGFloat = 0.96
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? scale : 1)
-            .animation(Motion.pop, value: configuration.isPressed)
+            .animation(Motion.press, value: configuration.isPressed)
     }
 }
 
-/// A card here is a plane with an edge, not a floating slab: the canvas draws
-/// every surface with a 1px line and no shadow at all.
+/// A card here is a fill, not a border and not a shadow — the canvas separates
+/// cards from the page by tone alone.
 struct CardBackground: ViewModifier {
     @Environment(\.theme) private var theme
     var radius: CGFloat?
     var filled: Color?
-    var bordered: Bool = true
+    var shadowed: Bool = false
 
     func body(content: Content) -> some View {
-        let shape = RoundedRectangle(cornerRadius: radius ?? theme.radii.r, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: radius ?? Radii.card, style: .continuous)
         return content
-            .background(shape.fill(filled ?? theme.surface))
-            .overlay(bordered ? shape.strokeBorder(theme.line, lineWidth: 1) : nil)
+            .background(shape.fill(filled ?? theme.card))
+            .compositingGroup()
+            .shadow(color: shadowed ? .black.opacity(theme.isDark ? 0.7 : 0.35) : .clear,
+                    radius: 22, y: 18)
     }
 }
 
 extension View {
-    func card(radius: CGFloat? = nil, filled: Color? = nil, bordered: Bool = true) -> some View {
-        modifier(CardBackground(radius: radius, filled: filled, bordered: bordered))
+    func card(radius: CGFloat? = nil, filled: Color? = nil, shadowed: Bool = false) -> some View {
+        modifier(CardBackground(radius: radius, filled: filled, shadowed: shadowed))
     }
 
-    /// Staggered entrance used across the canvas: fade + 10pt rise.
-    func riseIn(delay: Double = 0) -> some View { modifier(RiseIn(delay: delay)) }
+    /// `animation:fadeUp .4s <delay> both` — 14pt up and a fade.
+    func fadeUp(delay: Double = 0) -> some View { modifier(FadeUp(delay: delay)) }
+
+    /// Kept for call sites written against the previous direction.
+    func riseIn(delay: Double = 0) -> some View { modifier(FadeUp(delay: delay)) }
 }
 
-struct RiseIn: ViewModifier {
+struct FadeUp: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var delay: Double
     @State private var shown = false
@@ -343,9 +323,9 @@ struct RiseIn: ViewModifier {
     func body(content: Content) -> some View {
         content
             .opacity(shown ? 1 : 0)
-            .offset(y: shown ? 0 : 10)
+            .offset(y: shown ? 0 : 14)
             .onAppear {
-                withAnimation(Motion.reduced(reduceMotion, Motion.riseDelayed(delay))) {
+                withAnimation(Motion.reduced(reduceMotion, Motion.fadeUpDelayed(delay))) {
                     shown = true
                 }
             }
@@ -354,7 +334,7 @@ struct RiseIn: ViewModifier {
 
 // MARK: - Small shared atoms
 
-/// The app's droplet mark: a circle with one squared corner, rotated 45°.
+/// The app's droplet mark. `animation:breathe` scales it 1 ⇄ 1.13.
 struct DropletMark: View {
     @Environment(\.theme) private var theme
     var size: CGFloat = 46
@@ -371,13 +351,13 @@ struct DropletMark: View {
             topTrailingRadius: size / 2,
             style: .continuous
         )
-        .fill(color ?? theme.accent)
+        .fill(color ?? theme.acc)
         .frame(width: size, height: size)
         .rotationEffect(.degrees(45))
-        .scaleEffect(breathe ? 1.09 : 1)
+        .scaleEffect(breathe ? 1.13 : 1)
         .onAppear {
             guard breathing, !reduceMotion else { return }
-            withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) {
+            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
                 breathe = true
             }
         }
@@ -390,7 +370,7 @@ struct ChevronRight: View {
     var body: some View {
         Image(systemName: "chevron.right")
             .font(.system(size: 12, weight: .semibold))
-            .foregroundStyle(theme.faint)
+            .foregroundStyle(theme.sub)
     }
 }
 
@@ -402,9 +382,10 @@ struct SectionCaption: View {
 
     var body: some View {
         Text(text)
-            .font(theme.fonts.body(9, .bold))
-            .kerning(1.1)
-            .foregroundStyle(theme.faint)
+            .font(Fonts.text(12, .bold))
+            .kerning(12 * 0.08)
+            .textCase(.uppercase)
+            .foregroundStyle(theme.sub)
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityAddTraits(.isHeader)
     }
@@ -412,7 +393,7 @@ struct SectionCaption: View {
 
 // MARK: - Drink category tints
 //
-// Identity colours for a kind of drink, deliberately outside the band scale —
+// Identity colours for a kind of drink, deliberately outside the goal ramp —
 // a wine is plum whether or not you are over your goal.
 
 enum DrinkTints {
@@ -424,8 +405,7 @@ enum DrinkTints {
     static let cider = Color(hex: 0xC9962F)
 
     /// Category guessed from ABV and serving size, for the presets and logs
-    /// that predate a category field. Wide pours at low strength are beer;
-    /// small pours at high strength are spirits.
+    /// that predate a category field.
     static func forDrink(abv: Double, ml: Double) -> Color {
         if abv >= 30 { return spirit }
         if abv >= 9, ml <= 220 { return wine }

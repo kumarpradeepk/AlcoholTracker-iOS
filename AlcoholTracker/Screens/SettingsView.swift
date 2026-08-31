@@ -12,21 +12,21 @@ struct SettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(MainTab.settings.title)
-                    .font(theme.fonts.display(32))
+                    .font(Fonts.figure(32))
                     .kerning(-0.5)
                     .padding(.top, 12)
 
                 if model.pro {
                     HStack(spacing: 10) {
-                        Circle().fill(theme.b1).frame(width: 8, height: 8)
+                        Circle().fill(theme.moss).frame(width: 8, height: 8)
                         Text(L.s("set_pro_active"))
-                            .font(theme.fonts.body(13.5, .semibold))
-                            .foregroundStyle(theme.b1)
+                            .font(Fonts.text(13.5, .semibold))
+                            .foregroundStyle(theme.moss)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 11)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(theme.surface2))
+                    .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(theme.elev))
                     .padding(.top, 14)
                 } else {
                     proBanner.padding(.top, 14)
@@ -35,7 +35,7 @@ struct SettingsView: View {
                 section(L.s("set_section_you")) {
                     SettingsGroup {
                         SettingsRow(
-                            iconTint: theme.accent, iconBackground: theme.surface2,
+                            iconTint: theme.acc, iconBackground: theme.elev,
                             iconSystemName: "person.fill", title: L.s("set_profile"),
                             showChevron: true,
                             action: { pushTo(.profile) }
@@ -43,7 +43,7 @@ struct SettingsView: View {
                             valueText(settings.profileSummary)
                         }
                         SettingsRow(
-                            iconTint: theme.b1, iconBackground: theme.surface2,
+                            iconTint: theme.moss, iconBackground: theme.elev,
                             iconSystemName: "square.fill", title: L.s("set_units"),
                             showChevron: true,
                             action: { pushTo(.units) }
@@ -51,7 +51,7 @@ struct SettingsView: View {
                             valueText(settings.unitsSummary)
                         }
                         SettingsRow(
-                            iconTint: theme.b2, iconBackground: theme.surface2,
+                            iconTint: theme.amber, iconBackground: theme.elev,
                             iconSystemName: "drop.fill", title: L.s("set_guideline"),
                             showChevron: true,
                             action: { pushTo(.guideline) }
@@ -59,13 +59,13 @@ struct SettingsView: View {
                             valueText(L.f("set_guideline_value", settings.dailyGoal))
                         }
                         SettingsRow(
-                            iconTint: theme.accent, iconBackground: theme.surface2,
+                            iconTint: theme.acc, iconBackground: theme.elev,
                             iconSystemName: "dollarsign", title: L.s("set_ask_cost")
                         ) {
                             AppToggle(isOn: $settings.askCost)
                         }
                         SettingsRow(
-                            iconTint: theme.b2, iconBackground: theme.surface2,
+                            iconTint: theme.amber, iconBackground: theme.elev,
                             iconSystemName: "circle", title: L.s("set_show_calories"),
                             showDivider: false
                         ) {
@@ -77,7 +77,7 @@ struct SettingsView: View {
                 section(L.s("set_section_insights")) {
                     SettingsGroup {
                         SettingsRow(
-                            iconTint: theme.b1, iconBackground: theme.surface2,
+                            iconTint: theme.moss, iconBackground: theme.elev,
                             iconSystemName: "checkmark", title: L.s("set_auto_dry")
                         ) {
                             if !model.pro { ProBadge { model.openPaywall() } }
@@ -87,7 +87,7 @@ struct SettingsView: View {
                             }
                         }
                         SettingsRow(
-                            iconTint: theme.accent, iconBackground: theme.surface2,
+                            iconTint: theme.acc, iconBackground: theme.elev,
                             iconSystemName: "percent", title: PushScreen.bacMonitor.title,
                             showChevron: true,
                             action: {
@@ -97,7 +97,7 @@ struct SettingsView: View {
                             if !model.pro { ProBadge() }
                         }
                         SettingsRow(
-                            iconTint: theme.b2, iconBackground: theme.surface2,
+                            iconTint: theme.amber, iconBackground: theme.elev,
                             iconSystemName: "bell.fill", title: L.s("set_notifications"),
                             showChevron: true,
                             action: { pushTo(.notifications) }
@@ -107,7 +107,7 @@ struct SettingsView: View {
                                 : L.f("set_notif_count", model.reminders.count))
                         }
                         SettingsRow(
-                            iconTint: theme.b3, iconBackground: theme.b3.opacity(0.14),
+                            iconTint: theme.danger, iconBackground: theme.danger.opacity(0.14),
                             iconSystemName: "plus", title: L.s("set_health_sync"),
                             showChevron: true,
                             action: {
@@ -119,7 +119,7 @@ struct SettingsView: View {
                                 : L.s("set_health_off"))
                         }
                         SettingsRow(
-                            iconTint: theme.muted, iconBackground: theme.surface2,
+                            iconTint: theme.sub, iconBackground: theme.elev,
                             iconSystemName: "applewatch", title: L.s("set_quick_log"),
                             showChevron: true, showDivider: false,
                             action: {
@@ -136,20 +136,14 @@ struct SettingsView: View {
 
                 section(L.s("set_section_appearance")) {
                     SettingsGroup {
-                        // Theme and light/dark are one destination now: three
-                        // complete looks, each designed in both schemes, which a
-                        // single toggle could no longer express.
                         SettingsRow(
-                            iconTint: theme.muted, iconBackground: theme.surface2,
-                            iconSystemName: "circle.lefthalf.filled",
-                            title: L.s("set_theme"),
-                            showChevron: true,
-                            action: { pushTo(.theme) }
+                            iconTint: theme.sub, iconBackground: theme.elev,
+                            iconSystemName: "moon.fill", title: L.s("set_dark_mode")
                         ) {
-                            valueText(themeSummary)
+                            AppToggle(isOn: darkBinding)
                         }
                         SettingsRow(
-                            iconTint: theme.accent, iconBackground: theme.surface2,
+                            iconTint: theme.acc, iconBackground: theme.elev,
                             iconSystemName: "app", title: L.s("set_app_icon"),
                             showChevron: true,
                             action: { pushTo(.icon) }
@@ -157,7 +151,7 @@ struct SettingsView: View {
                             valueText([L.s("set_icon_default"), L.s("set_icon_gift"), L.s("set_icon_holiday")][min(settings.iconIndex, 2)])
                         }
                         SettingsRow(
-                            iconTint: theme.b1, iconBackground: theme.surface2,
+                            iconTint: theme.moss, iconBackground: theme.elev,
                             iconSystemName: "globe", title: L.s("set_language"),
                             showChevron: true, showDivider: false,
                             action: openLanguageSettings
@@ -172,19 +166,19 @@ struct SettingsView: View {
                     // (brief P6) — silent backup failure destroys multi-year logs.
                     HStack(spacing: 11) {
                         Circle()
-                            .fill(theme.surface2)
+                            .fill(theme.elev)
                             .frame(width: 24, height: 24)
                             .overlay(
                                 Image(systemName: "checkmark")
                                     .font(.system(size: 9, weight: .bold))
-                                    .foregroundStyle(theme.b1)
+                                    .foregroundStyle(theme.moss)
                             )
                         VStack(alignment: .leading, spacing: 1) {
                             Text(L.s("set_backup_title"))
-                                .font(theme.fonts.body(14.5, .semibold))
+                                .font(Fonts.text(14.5, .semibold))
                             Text(BackupManager.statusDetail(lastBackupAt: settings.lastBackupAt))
-                                .font(theme.fonts.body(12.5))
-                                .foregroundStyle(theme.muted)
+                                .font(Fonts.text(12.5))
+                                .foregroundStyle(theme.sub)
                         }
                         Spacer()
                     }
@@ -194,14 +188,14 @@ struct SettingsView: View {
 
                     SettingsGroup {
                         SettingsRow(
-                            iconTint: theme.accent, iconBackground: theme.surface2,
+                            iconTint: theme.acc, iconBackground: theme.elev,
                             iconSystemName: "arrow.up", title: L.s("set_backup_row"),
                             showChevron: true, showDivider: false,
                             action: { pushTo(.backup) }
                         ) {
                             Text(L.s("set_backup_free"))
-                                .font(theme.fonts.body(12.5, .semibold))
-                                .foregroundStyle(theme.b1)
+                                .font(Fonts.text(12.5, .semibold))
+                                .foregroundStyle(theme.moss)
                         }
                     }
                     .padding(.top, 8)
@@ -210,14 +204,14 @@ struct SettingsView: View {
                 section(L.s("set_section_privacy")) {
                     SettingsGroup {
                         SettingsRow(
-                            iconTint: theme.muted, iconBackground: theme.surface2,
+                            iconTint: theme.sub, iconBackground: theme.elev,
                             iconSystemName: "lock.fill", title: L.s("set_app_lock"),
                             subtitle: L.s("set_app_lock_sub")
                         ) {
                             AppToggle(isOn: $settings.appLock)
                         }
                         SettingsRow(
-                            iconTint: theme.muted, iconBackground: theme.surface2,
+                            iconTint: theme.sub, iconBackground: theme.elev,
                             iconSystemName: "eye.slash.fill", title: L.s("set_discreet"),
                             subtitle: L.s("set_discreet_sub")
                         ) {
@@ -230,7 +224,7 @@ struct SettingsView: View {
                             ))
                         }
                         SettingsRow(
-                            iconTint: theme.muted, iconBackground: theme.surface2,
+                            iconTint: theme.sub, iconBackground: theme.elev,
                             iconSystemName: "clock", title: L.s("set_day_ends"),
                             subtitle: L.s("set_day_ends_sub"),
                             showDivider: false,
@@ -240,8 +234,8 @@ struct SettingsView: View {
                             }
                         ) {
                             Text(settings.cutoff.label)
-                                .font(theme.fonts.body(14.5, .semibold))
-                                .foregroundStyle(theme.accent)
+                                .font(Fonts.text(14.5, .semibold))
+                                .foregroundStyle(theme.acc)
                         }
                     }
 
@@ -251,13 +245,13 @@ struct SettingsView: View {
                 section(L.s("set_section_support")) {
                     SettingsGroup {
                         SettingsRow(
-                            iconTint: theme.accent, iconBackground: theme.surface2,
+                            iconTint: theme.acc, iconBackground: theme.elev,
                             iconSystemName: "envelope.fill", title: L.s("set_contact"),
                             showChevron: true,
                             action: contactSupport
                         ) { EmptyView() }
                         SettingsRow(
-                            iconTint: theme.muted, iconBackground: theme.surface2,
+                            iconTint: theme.sub, iconBackground: theme.elev,
                             iconSystemName: "info", title: L.s("set_about"),
                             showChevron: true,
                             action: { pushTo(.about) }
@@ -265,27 +259,27 @@ struct SettingsView: View {
                             valueText(L.s("set_about_version_value"))
                         }
                         SettingsRow(
-                            iconTint: theme.muted, iconBackground: theme.surface2,
+                            iconTint: theme.sub, iconBackground: theme.elev,
                             iconSystemName: "number", title: L.s("set_customer_id"),
                             showDivider: false
                         ) {
                             Text(settings.customerID)
-                                .font(theme.fonts.body(13))
+                                .font(Fonts.text(13))
                                 .monospacedDigit()
-                                .foregroundStyle(theme.faint)
+                                .foregroundStyle(theme.sub)
                             Button(L.s("set_copy")) {
                                 UIPasteboard.general.string = settings.customerID
                                 model.showToast(L.s("toast_customer_id_copied"))
                             }
-                            .font(theme.fonts.body(13.5, .semibold))
-                            .foregroundStyle(theme.accent)
+                            .font(Fonts.text(13.5, .semibold))
+                            .foregroundStyle(theme.acc)
                         }
                     }
                 }
 
                 Text(L.s("set_footer"))
-                    .font(theme.fonts.body(12))
-                    .foregroundStyle(theme.faint)
+                    .font(Fonts.text(12))
+                    .foregroundStyle(theme.sub)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
                     .frame(maxWidth: .infinity)
@@ -301,17 +295,6 @@ struct SettingsView: View {
 
     private func pushTo(_ screen: PushScreen) {
         withAnimation(Motion.slide) { model.push = screen }
-    }
-
-    /// "Kiln · System" — the theme plus the scheme it is being shown in.
-    private var themeSummary: String {
-        let scheme: String
-        switch settings.appearance {
-        case .system: scheme = L.s("theme_scheme_system")
-        case .light: scheme = L.s("theme_scheme_light")
-        case .dark: scheme = L.s("theme_scheme_dark")
-        }
-        return "\(settings.theme.displayName) \u{00B7} \(scheme)"
     }
 
     private var darkBinding: Binding<Bool> {
@@ -337,8 +320,8 @@ struct SettingsView: View {
 
     private func valueText(_ text: String) -> some View {
         Text(text)
-            .font(theme.fonts.body(14))
-            .foregroundStyle(theme.muted)
+            .font(Fonts.text(14))
+            .foregroundStyle(theme.sub)
     }
 
     private var proBanner: some View {
@@ -349,18 +332,18 @@ struct SettingsView: View {
                     .frame(width: 30, height: 30)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(L.s("set_pro_banner_title"))
-                        .font(theme.fonts.body(14.5, .semibold))
-                        .foregroundStyle(theme.text)
+                        .font(Fonts.text(14.5, .semibold))
+                        .foregroundStyle(theme.ink)
                     Text(L.s("set_pro_banner_sub"))
-                        .font(theme.fonts.body(12.5))
-                        .foregroundStyle(theme.muted)
+                        .font(Fonts.text(12.5))
+                        .foregroundStyle(theme.sub)
                 }
                 Spacer()
                 ChevronRight()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(theme.surface2))
+            .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(theme.elev))
         }
         .buttonStyle(PressScale(scale: 0.98))
     }
@@ -369,14 +352,14 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 12) {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(theme.surface2)
+                    .fill(theme.elev)
                     .frame(width: 28, height: 28)
                     .overlay(
                         Text(L.s("set_tone_icon_sample"))
-                            .font(theme.fonts.body(11, .bold))
-                            .foregroundStyle(theme.accent)
+                            .font(Fonts.text(11, .bold))
+                            .foregroundStyle(theme.acc)
                     )
-                Text(L.s("set_tone")).font(theme.fonts.body(15.5))
+                Text(L.s("set_tone")).font(Fonts.text(15.5))
             }
 
             SegmentedPill(
@@ -387,8 +370,8 @@ struct SettingsView: View {
             .padding(.top, 10)
 
             Text(settings.tone.subCopy)
-                .font(theme.fonts.body(12.5))
-                .foregroundStyle(theme.faint)
+                .font(Fonts.text(12.5))
+                .foregroundStyle(theme.sub)
                 .padding(.top, 8)
         }
         .padding(.horizontal, 16)

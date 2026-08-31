@@ -67506,17 +67506,6 @@
         }
       }
     },
-    "theme_coaster_desc": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kraft paper, ink and honey"
-          }
-        }
-      }
-    },
     "theme_intro": {
       "extractionState": "manual",
       "localizations": {
@@ -67528,24 +67517,24 @@
         }
       }
     },
-    "theme_kiln_desc": {
+    "theme_mono": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Warm stone and struck brass"
+            "value": "Mono"
           }
         }
       }
     },
-    "theme_nocturne_desc": {
+    "theme_mono_desc": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Graphite, ivory for banked days"
+            "value": "Ink on paper; state shown by texture, not colour"
           }
         }
       }
@@ -67590,6 +67579,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "System"
+          }
+        }
+      }
+    },
+    "theme_warm": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warm"
+          }
+        }
+      }
+    },
+    "theme_warm_desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clay, paper and a single accent"
           }
         }
       }

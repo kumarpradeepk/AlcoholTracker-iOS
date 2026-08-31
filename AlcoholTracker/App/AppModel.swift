@@ -79,7 +79,6 @@ enum AppDialog: Identifiable, Equatable {
 
 enum PushScreen: String, Identifiable {
     case profile, units, notifications, bacMonitor, watch, backup, about, icon, bacTrends, guideline
-    case theme
 
     var id: String { rawValue }
 
@@ -93,7 +92,6 @@ enum PushScreen: String, Identifiable {
         case .backup: L.s("push_title_backup")
         case .about: L.s("push_title_about")
         case .icon: L.s("set_app_icon")
-        case .theme: L.s("push_title_theme")
         case .bacTrends: L.s("push_title_trends")
         case .guideline: L.s("push_title_guideline")
         }
@@ -255,16 +253,43 @@ final class AppModel: ObservableObject {
     // MARK: Derived — quick log
 
     /// "The usual?" — top three most-poured drinks, falling back to presets.
+    /// How many tiles "The usual?" offers, per the canvas's chip row.
+    static let quickTiles = 5
+
+    /// "The usual?" — the five drinks this user pours most, most-logged first.
+    ///
+    /// Two rules, both from what the row is for: the drink is ranked by how
+    /// often it appears, and the serve it offers is the one that appears most
+    /// often *for that drink* — not the last one poured, which would let a
+    /// single odd measure hijack the tile. Ties break towards the more recent.
+    ///
+    /// Returns empty when there is no history: the row is derived from the
+    /// user's own log and shows presets to nobody, so the Diary hides the
+    /// section rather than seeding it with drinks they never chose.
     var quickItems: [DrinkPreset] {
-        var freq: [String: (preset: DrinkPreset, count: Int)] = [:]
-        for r in logs {
-            let p = DrinkPreset(name: r.name, abv: r.abv, ml: r.ml, cost: r.cost)
-            var e = freq[r.name] ?? (p, 0)
-            e.count += 1
-            freq[r.name] = e
+        func rank(_ a: [DrinkLog], _ b: [DrinkLog]) -> Bool {
+            if a.count != b.count { return a.count > b.count }
+            let ra = a.map(\.loggedAt).max() ?? .distantPast
+            let rb = b.map(\.loggedAt).max() ?? .distantPast
+            return ra > rb
         }
-        let top = freq.values.sorted { $0.count > $1.count }.prefix(3).map(\.preset)
-        return top.isEmpty ? Array(Presets.popular.prefix(3)) : Array(top)
+        struct Serve: Hashable { let ml: Double; let abv: Double }
+
+        return Dictionary(grouping: logs, by: \.name)
+            .sorted { rank($0.value, $1.value) }
+            .prefix(AppModel.quickTiles)
+            .map { name, rows in
+                let serve = Dictionary(grouping: rows) { Serve(ml: $0.ml, abv: $0.abv) }
+                    .values
+                    .sorted(by: rank)
+                    .first ?? rows
+                // The price they usually pay for *that* serve, ignoring the
+                // rows where cost was left blank.
+                let costs = serve.map(\.cost).filter { $0 > 0 }
+                let cost = Dictionary(grouping: costs, by: { $0 })
+                    .max { $0.value.count < $1.value.count }?.key ?? 0
+                return DrinkPreset(name: name, abv: serve[0].abv, ml: serve[0].ml, cost: cost)
+            }
     }
 
     // MARK: Derived — statistics
